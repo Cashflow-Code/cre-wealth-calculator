@@ -44,7 +44,7 @@ export default function App() {
   const [horizon, setHorizon]                       = useState(5);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
-  const [isDark, setIsDark]                         = useState(true);
+  const [isDark, setIsDark]                         = useState(false);
   const [refiInterval, setRefiInterval]             = useState(5);
   const [reinvestMode, setReinvestMode]             = useState('both');
 
