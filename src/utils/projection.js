@@ -60,6 +60,7 @@ export function computeProjection({
     properties: 0, cumulativeTaxesPaid: 0, yearTaxesPaid: 0,
     investorWealth: 0, doNothingPosition: 0,
     depPool: 0, bankedFutureTax: 0, totalProfits: 0,
+    equityGain: 0,
     stockBalance: 0, totalLoanBalance: 0,
     annualDebtService: 0, capitalDeployed: 0,
     isBuyingPhase: true, depEligible: depDeferYears === 0,
@@ -151,7 +152,8 @@ export function computeProjection({
 
     // Value of the remaining depreciation pool at current income/rates
     const bankedFutureTax = taxSavingsFromDeduction(income, depPool, stateRateDecimal);
-    const totalProfits    = yourEquity + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
+    const equityGain      = Math.max(0, yourEquity - capitalDeployed);
+    const totalProfits    = equityGain + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
 
     data.push({
       year: `Y${year}`, yearNum: year,
@@ -170,6 +172,7 @@ export function computeProjection({
       depPool,
       bankedFutureTax,
       totalProfits,
+      equityGain,
       stockBalance,
       totalLoanBalance,
       annualDebtService:   totalAnnualDebtService * equityRate,

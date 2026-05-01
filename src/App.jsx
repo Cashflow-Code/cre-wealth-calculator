@@ -1,14 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   TrendingUp, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
-  Coins, PanelLeftOpen, Menu,
+  Coins, PanelLeftOpen, Menu, Sun, Moon,
 } from 'lucide-react';
 import Sidebar from './components/Sidebar.jsx';
 import MobileSidebar from './components/MobileSidebar.jsx';
 import WealthChart from './components/WealthChart.jsx';
 import MetricTile from './components/MetricTile.jsx';
-import TotalBanner from './components/TotalBanner.jsx';
 import ContrastBullet from './components/ContrastBullet.jsx';
 import Logo from './components/Logo.jsx';
 import { fmt } from './utils/fmt.js';
@@ -47,6 +46,11 @@ export default function App() {
   const [horizon, setHorizon]                       = useState(5);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
+  const [isDark, setIsDark]                         = useState(true);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   const resetToDefaults = () => {
     setIncome(DEFAULTS.income);                       setStateRate(DEFAULTS.stateRate);
@@ -81,13 +85,6 @@ export default function App() {
   const annualStockDeposit = afterTaxIncome * (savingsRate / 100);
   const totalStockInvested = annualStockDeposit * TOTAL_YEARS;
 
-  const takeActionBreakdown = [
-    fmt(horizonData.equity), 'equity',
-    '·', fmt(horizonData.cumulativeCashflow), 'cashflow',
-    '·', fmt(horizonData.cumulativeTaxSavings), 'saved',
-    ...(horizonData.bankedFutureTax > 0 ? ['·', fmt(horizonData.bankedFutureTax), 'banked'] : []),
-  ].join(' ');
-
   const sharedSidebarProps = {
     income, setIncome, stateRate, setStateRate, enoughNumber, setEnoughNumber,
     propertyValue, setPropertyValue, propertiesPerYear, setPropertiesPerYear,
@@ -104,7 +101,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060d1f] text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#060d1f] text-slate-900 dark:text-slate-100">
       {/* Ambient glows */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-emerald-900/20 blur-3xl" />
@@ -119,27 +116,38 @@ export default function App() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-900/60 border border-slate-700/40 text-slate-400 hover:text-emerald-400 transition-colors"
+              className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
               aria-label="Open settings"
             >
               <Menu className="w-5 h-5" />
             </button>
             <Logo />
           </div>
-          <div className="flex items-center gap-1 p-1 bg-slate-900/60 border border-slate-700/40 rounded-xl backdrop-blur-sm">
-            {[1, 3, 5].map((y) => (
-              <button
-                key={y}
-                onClick={() => setHorizon(y)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  horizon === y
-                    ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {y}Y
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            {/* Dark/Light mode toggle */}
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors"
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            {/* Year picker */}
+            <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
+              {[1, 3, 5].map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setHorizon(y)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    horizon === y
+                      ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  {y}Y
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
@@ -153,38 +161,33 @@ export default function App() {
           <main className="flex-1 min-w-0 space-y-6">
 
             {/* Hero */}
-            <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-500/[0.07] via-[#0d1630] to-red-500/[0.05] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
+            <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-amber-500/[0.07] dark:via-[#0d1630] dark:to-red-500/[0.05] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
               <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="relative">
-                <div className="flex items-center gap-2 text-amber-400/70 mb-4">
+                <div className="flex items-center gap-2 text-amber-500/70 dark:text-amber-400/70 mb-4">
                   <AlertTriangle className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-widest">{horizon}-Year Opportunity Cost</span>
                 </div>
                 <div
-                  className="text-5xl sm:text-7xl lg:text-8xl font-black text-amber-400 tabular-nums leading-none"
+                  className="text-5xl sm:text-7xl lg:text-8xl font-black text-amber-500 dark:text-amber-400 tabular-nums leading-none"
                   style={{ textShadow: '0 0 60px rgba(245,158,11,0.25)' }}
                 >
                   {fmt(horizonData.totalProfits)}
                 </div>
-                <p className="text-sm text-slate-400 mt-3 max-w-xl">
-                  Equity you’d build + cashflow you’d earn + tax savings (taken & banked) — over {horizon} {horizon === 1 ? 'year' : 'years'}.
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-3 max-w-xl">
+                  Equity gain + cashflow + tax savings (taken &amp; banked) — over {horizon} {horizon === 1 ? 'year' : 'years'}.
                 </p>
 
                 <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                   {/* Take Action */}
-                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 space-y-4">
-                    <div className="flex items-center gap-2 text-emerald-400">
+                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 space-y-4 relative overflow-hidden">
+                    <Coins className="absolute bottom-3 right-3 w-16 h-16 text-emerald-500 opacity-10 pointer-events-none" />
+                    <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400">
                       <Trophy className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-widest">If You Take Action</span>
                     </div>
-                    <TotalBanner
-                      label={`Total Profits · Year ${horizon}`}
-                      value={fmt(horizonData.totalProfits)}
-                      breakdown={takeActionBreakdown}
-                      tone="emerald" icon={Coins}
-                    />
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <MetricTile label="Net Worth"
                         value={fmt(horizonData.equity)}
                         sublabel={`${equityPct}% of ${fmt(horizonData.totalDealValue)}`}
@@ -203,7 +206,7 @@ export default function App() {
                               : 'Pool deployed'
                         }
                         icon={TrendingUp} tone="emerald" />
-                      <MetricTile label="Capital In"
+                      <MetricTile label="Cash Deployed"
                         value={fmt(horizonData.capitalDeployed)}
                         sublabel={ltv > 0 ? `${ltv}% LTV · ${100 - ltv}% down` : 'All cash (no loan)'}
                         icon={Coins} tone="emerald" />
@@ -211,8 +214,8 @@ export default function App() {
                     <ul className="space-y-2.5 pt-1">
                       {projection.isReachable ? (
                         <ContrastBullet tone="emerald">
-                          You’d be free in{' '}
-                          <strong className="text-emerald-400">
+                          You'd be free in{' '}
+                          <strong className="text-emerald-500 dark:text-emerald-400">
                             {projection.yearsToReach} {projection.yearsToReach === 1 ? 'year' : 'years'}
                           </strong>
                           {' '}— <strong>{projection.propsNeeded} properties</strong> at{' '}
@@ -220,47 +223,43 @@ export default function App() {
                         </ContrastBullet>
                       ) : (
                         <ContrastBullet tone="amber">
-                          You’d need <strong>{projection.propsNeeded === Infinity ? '∞' : projection.propsNeeded} properties</strong> for {fmt(enoughNumber)}/mo — adjust LTV, cap rate, or equity stake
+                          You'd need <strong>{projection.propsNeeded === Infinity ? '∞' : projection.propsNeeded} properties</strong> for {fmt(enoughNumber)}/mo — adjust LTV, cap rate, or equity stake
                         </ContrastBullet>
                       )}
                       <ContrastBullet tone="emerald">
-                        You’d build{' '}
-                        <strong className="text-emerald-400">{fmt(horizonData.equity)}</strong> equity
-                        ({equityPct}% of {fmt(horizonData.totalDealValue)} portfolio)
+                        You'd gain{' '}
+                        <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.equityGain)}</strong>{' '}
+                        in equity appreciation ({fmt(horizonData.equity)} total equity — {equityPct}% of {fmt(horizonData.totalDealValue)} portfolio)
                       </ContrastBullet>
                       <ContrastBullet tone="emerald">
-                        You’d earn{' '}
-                        <strong className="text-emerald-400">{fmt(horizonData.monthlyCashflow)}/mo</strong>{' '}
+                        You'd earn{' '}
+                        <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.monthlyCashflow)}/mo</strong>{' '}
                         recurring · {fmt(horizonData.cumulativeCashflow)} cumulative
                       </ContrastBullet>
                       <ContrastBullet tone="emerald">
-                        You’d save{' '}
-                        <strong className="text-emerald-400">{fmt(horizonData.cumulativeTaxSavings)}</strong> in taxes
+                        You'd save{' '}
+                        <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.cumulativeTaxSavings)}</strong> in taxes
                         {horizonData.bankedFutureTax > 0 && (
                           <> — plus{' '}
-                            <strong className="text-emerald-400">{fmt(horizonData.bankedFutureTax)}</strong> banked for the future
+                            <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.bankedFutureTax)}</strong> banked for the future
                           </>
                         )}
                         {extraYearsBanked > 0.5 && (
-                          <span className="text-slate-500 text-xs"> (~{extraYearsBanked.toFixed(1)} yrs of enough number)</span>
+                          <span className="text-slate-400 text-xs"> (~{extraYearsBanked.toFixed(1)} yrs of enough number)</span>
                         )}
                       </ContrastBullet>
                     </ul>
                   </div>
 
                   {/* Do Nothing */}
-                  <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5 space-y-4">
-                    <div className="flex items-center gap-2 text-red-400">
+                  <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5 space-y-4 relative overflow-hidden">
+                    <Zap className="absolute bottom-3 right-3 w-16 h-16 text-red-500 opacity-10 pointer-events-none" />
+                    <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
                       <AlertTriangle className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-widest">If You Do Nothing</span>
                     </div>
-                    <TotalBanner
-                      label={`Total Opportunity Cost · Year ${horizon}`}
-                      value={fmt(horizonData.totalProfits)}
-                      breakdown="Same number, opposite side. Every dollar that would have been your profit is opportunity walking out the door."
-                      tone="red" icon={Zap}
-                    />
-                    <div className="grid grid-cols-2 gap-2">
+                    <p className="text-xs text-slate-500 dark:text-slate-500 italic -mt-2">Same number, opposite side.</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <MetricTile label="Years Working"
                         value={`${STATUS_QUO_YEARS}+`} sublabel="Time for paychecks"
                         icon={Clock} tone="red" />
@@ -277,16 +276,16 @@ export default function App() {
                     </div>
                     <ul className="space-y-2.5 pt-1">
                       <ContrastBullet tone="red">
-                        <strong className="text-red-400">{STATUS_QUO_YEARS} more years</strong> of trading time for paychecks
+                        <strong className="text-red-500 dark:text-red-400">{STATUS_QUO_YEARS} more years</strong> of trading time for paychecks
                       </ContrastBullet>
                       <ContrastBullet tone="red">
-                        <strong className="text-red-400">$0/mo passive</strong> — paycheck-to-paycheck, every month
+                        <strong className="text-red-500 dark:text-red-400">$0/mo passive</strong> — paycheck-to-paycheck, every month
                       </ContrastBullet>
                       <ContrastBullet tone="red">
-                        One layoff away from <strong className="text-red-400">starting from scratch</strong>
+                        One layoff away from <strong className="text-red-500 dark:text-red-400">starting from scratch</strong>
                       </ContrastBullet>
                       <ContrastBullet tone="red">
-                        <strong className="text-red-400">{fmt(horizonData.cumulativeTaxesPaid)}</strong> thrown away in taxes ({fmt(horizonData.yearTaxesPaid)}/yr)
+                        <strong className="text-red-500 dark:text-red-400">{fmt(horizonData.cumulativeTaxesPaid)}</strong> thrown away in taxes ({fmt(horizonData.yearTaxesPaid)}/yr)
                       </ContrastBullet>
                     </ul>
                   </div>
@@ -304,10 +303,11 @@ export default function App() {
               yearsToReach={projection.yearsToReach}
               totalYears={TOTAL_YEARS}
               showStockAlt={showStockAlt}
+              isDark={isDark}
             />
 
             {/* Footnote */}
-            <p className="text-center text-xs text-slate-600 max-w-2xl mx-auto leading-relaxed pb-6">
+            <p className="text-center text-xs text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed pb-6">
               Buying years 1–{buyingYears}, hold through year {TOTAL_YEARS}.
               Year-1 deal jumps {forcedAppreciation}% (forced), then {annualAppreciation}%/yr after.
               Your equity = {equityPct}% share of total deal value.
@@ -324,12 +324,12 @@ export default function App() {
         {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 px-2 py-4 rounded-r-xl bg-[#0c1428] border border-l-0 border-slate-700/40 shadow-2xl hover:border-emerald-500/30 hover:bg-slate-800 transition-all"
+            className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 px-2 py-4 rounded-r-xl bg-white dark:bg-[#0c1428] border border-l-0 border-slate-200 dark:border-slate-700/40 shadow-2xl hover:border-emerald-500/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
             title="Show your numbers"
           >
-            <PanelLeftOpen className="w-5 h-5 text-emerald-400" />
+            <PanelLeftOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
             <span
-              className="text-[9px] font-bold uppercase tracking-widest text-slate-400"
+              className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
             >
               Your Numbers

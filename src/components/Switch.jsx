@@ -7,7 +7,7 @@ export default function Switch({ checked, onChange }) {
       role="switch"
       aria-checked={checked}
       className={`flex-shrink-0 relative inline-flex h-5 w-9 rounded-full transition-colors ${
-        checked ? 'bg-sky-500' : 'bg-slate-700'
+        checked ? 'bg-sky-500' : 'bg-slate-300 dark:bg-slate-700'
       }`}
     >
       <span

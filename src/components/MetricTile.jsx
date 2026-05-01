@@ -1,8 +1,8 @@
 import React from 'react';
 
 const TONES = {
-  emerald: { border: 'border-emerald-500/20', bg: 'bg-emerald-500/[0.06]', text: 'text-emerald-400', icon: 'text-emerald-500' },
-  red:     { border: 'border-red-500/20',     bg: 'bg-red-500/[0.06]',     text: 'text-red-400',     icon: 'text-red-500' },
+  emerald: { border: 'border-emerald-500/20', bg: 'bg-emerald-500/[0.06]', text: 'text-emerald-500 dark:text-emerald-400', icon: 'text-emerald-500' },
+  red:     { border: 'border-red-500/20',     bg: 'bg-red-500/[0.06]',     text: 'text-red-500 dark:text-red-400',         icon: 'text-red-500' },
 };
 
 export default function MetricTile({ label, value, sublabel, icon: Icon, tone }) {
