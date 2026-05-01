@@ -17,7 +17,7 @@ import { computeTotalTax } from './utils/tax.js';
 const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
-  capRate: 10, depreciation: 35, depDeferYears: 0, equityPct: 32,
+  capRate: 10, depreciation: 35, depDeferYears: 0, equityPct: 33,
   forcedAppreciation: 30, annualAppreciation: 10, cashflowGrowth: 3,
   showStockAlt: false, savingsRate: 20, stockReturn: 8,
 };
@@ -187,8 +187,8 @@ export default function App() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <MetricTile label="Net Worth"
-                        value={fmt(horizonData.totalDealValue * equityPct / 100)}
-                        sublabel={`${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio`}
+                        value={fmt(horizonData.equity)}
+                        sublabel={`Net equity · ${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio`}
                         icon={Home} tone="emerald" />
                       <MetricTile label="Cashflow"
                         value={`${fmt(horizonData.monthlyCashflow)}/mo`}

@@ -4,31 +4,24 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import EquityInput from '../components/EquityInput.jsx';
 
 describe('EquityInput', () => {
-  it('renders label text for all four presets', () => {
+  it('renders label text for all three presets', () => {
     render(<EquityInput value={33} onChange={() => {}} />);
-    ['finder', 'partner', 'co-own', 'solo'].forEach((label) => {
+    ['knowledge', 'capital', 'solo'].forEach((label) => {
       expect(screen.getByText(label)).toBeTruthy();
     });
   });
 
-  it('fires onChange(3) when finder preset is clicked', () => {
+  it('fires onChange(33) when knowledge preset is clicked', () => {
     const onChange = vi.fn();
-    render(<EquityInput value={33} onChange={onChange} />);
-    fireEvent.click(screen.getByText('finder').closest('button'));
-    expect(onChange).toHaveBeenCalledWith(3);
-  });
-
-  it('fires onChange(33) when partner preset is clicked', () => {
-    const onChange = vi.fn();
-    render(<EquityInput value={3} onChange={onChange} />);
-    fireEvent.click(screen.getByText('partner').closest('button'));
+    render(<EquityInput value={50} onChange={onChange} />);
+    fireEvent.click(screen.getByText('knowledge').closest('button'));
     expect(onChange).toHaveBeenCalledWith(33);
   });
 
-  it('fires onChange(50) when co-own preset is clicked', () => {
+  it('fires onChange(50) when capital preset is clicked', () => {
     const onChange = vi.fn();
     render(<EquityInput value={33} onChange={onChange} />);
-    fireEvent.click(screen.getByText('co-own').closest('button'));
+    fireEvent.click(screen.getByText('capital').closest('button'));
     expect(onChange).toHaveBeenCalledWith(50);
   });
 
@@ -39,9 +32,9 @@ describe('EquityInput', () => {
     expect(onChange).toHaveBeenCalledWith(100);
   });
 
-  it('shows partner description when value is 33', () => {
+  it('shows knowledge description when value is 33', () => {
     render(<EquityInput value={33} onChange={() => {}} />);
-    expect(screen.getByText(/partner deals/i)).toBeTruthy();
+    expect(screen.getByText(/source and manage/i)).toBeTruthy();
   });
 
   it('shows solo description when value is 100', () => {

@@ -22,7 +22,7 @@ export default function ChartTooltip({ active, payload, showStockAlt }) {
         </div>
         <div className="flex justify-between gap-4 text-slate-500 dark:text-slate-400 pl-3">
           <span>Equity appreciation</span>
-          <span className="tabular-nums">{fmt((d.equityGain ?? d.equity) - (d.cumulativePrincipalPaydown ?? 0))}</span>
+          <span className="tabular-nums">{fmt(d.equityGain ?? 0)}</span>
         </div>
         <div className="flex justify-between gap-4 text-slate-500 dark:text-slate-400 pl-3">
           <span>Principal paydown</span>

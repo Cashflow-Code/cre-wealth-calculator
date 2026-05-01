@@ -60,7 +60,7 @@ export function computeProjection({
     properties: 0, cumulativeTaxesPaid: 0, yearTaxesPaid: 0,
     investorWealth: 0, doNothingPosition: 0,
     depPool: 0, bankedFutureTax: 0, totalProfits: 0,
-    equityGain: 0, cumulativePrincipalPaydown: 0, yearPrincipalPaydown: 0,
+    equityGain: 0, cumulativePrincipalPaydown: 0, yearPrincipalPaydown: 0, totalOriginalPurchaseCost: 0,
     stockBalance: 0, totalLoanBalance: 0,
     annualDebtService: 0, capitalDeployed: 0,
     isBuyingPhase: true, depEligible: depDeferYears === 0,
@@ -68,6 +68,7 @@ export function computeProjection({
 
   let totalDealMonthlyCashflow    = 0;
   let totalDealAssetValue         = 0;
+  let totalOriginalPurchaseCost   = 0;
   let cumulativeProperties        = 0;
   let cumulativeCashflow          = 0;
   let cumulativeTaxSavings        = 0;
@@ -92,6 +93,7 @@ export function computeProjection({
       const downPayment      = totalPurchase - loanPrincipal;
 
       totalDealAssetValue      += totalPurchase * (1 + forcedApprecRate);
+      totalOriginalPurchaseCost += totalPurchase;
       totalDealMonthlyCashflow += totalPurchase * capRateDecimal / 12;
       depPool                  += totalPurchase * (depreciation / 100) * equityRate;
       // capitalDeployed stays 0: investor raises capital / uses creative financing
@@ -167,8 +169,8 @@ export function computeProjection({
 
     // Value of the remaining depreciation pool at current income/rates
     const bankedFutureTax = taxSavingsFromDeduction(income, depPool, stateRateDecimal);
-    const equityGain      = Math.max(0, yourEquity - capitalDeployed);
-    const totalProfits    = equityGain + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
+    const equityGain      = Math.max(0, (totalDealAssetValue - totalOriginalPurchaseCost) * equityRate);
+    const totalProfits    = equityGain + cumulativePrincipalPaydown + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
 
     data.push({
       year: `Y${year}`, yearNum: year,
@@ -190,6 +192,7 @@ export function computeProjection({
       equityGain,
       cumulativePrincipalPaydown,
       yearPrincipalPaydown,
+      totalOriginalPurchaseCost,
       stockBalance,
       totalLoanBalance,
       annualDebtService:   totalAnnualDebtService * equityRate,

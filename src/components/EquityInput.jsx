@@ -1,10 +1,9 @@
 import React from 'react';
 
 const LEVERAGE_PRESETS = [
-  { pct: 3,   label: 'finder',   desc: 'You find and bring the deal; partners fund and execute' },
-  { pct: 33,  label: 'partner',  desc: 'Standard JV split; you source and manage, partners fund' },
-  { pct: 50,  label: 'co-own',   desc: 'Equal partnership; you and partner share value equally' },
-  { pct: 100, label: 'solo',     desc: 'Full ownership — you source, fund, and operate everything' },
+  { pct: 33,  label: 'knowledge', desc: 'Standard JV split; you source and manage, partners fund' },
+  { pct: 50,  label: 'capital',   desc: 'Equal partnership; you and partner share value equally' },
+  { pct: 100, label: 'solo',      desc: 'Full ownership — you source, fund, and operate everything' },
 ];
 
 export default function EquityInput({ value, onChange }) {
@@ -19,7 +18,7 @@ export default function EquityInput({ value, onChange }) {
         <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">% Deal Controlled</label>
         <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{value}%</span>
       </div>
-      <div className="grid grid-cols-4 gap-1 mb-1.5">
+      <div className="grid grid-cols-3 gap-1 mb-1.5">
         {LEVERAGE_PRESETS.map(({ pct, label }) => (
           <button
             key={pct}
