@@ -3,10 +3,12 @@ import {
   TrendingUp, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
   Coins, PanelLeftOpen, Menu, Sun, Moon, Sparkles,
+  RefreshCw, Layers,
 } from 'lucide-react';
 import Sidebar from './components/Sidebar.jsx';
 import MobileSidebar from './components/MobileSidebar.jsx';
 import WealthChart from './components/WealthChart.jsx';
+import CashflowChart from './components/CashflowChart.jsx';
 import MetricTile from './components/MetricTile.jsx';
 import ContrastBullet from './components/ContrastBullet.jsx';
 import Logo from './components/Logo.jsx';
@@ -77,6 +79,25 @@ export default function App() {
   const afterTaxIncome     = income - baseYearTax;
   const annualStockDeposit = afterTaxIncome * (savingsRate / 100);
   const totalStockInvested = annualStockDeposit * TOTAL_YEARS;
+
+  // Tax savings reinvested at 25%/yr compounded to Y20
+  const taxReinvestWealth = useMemo(() => {
+    let portfolio = 0;
+    for (let y = 1; y <= TOTAL_YEARS; y++) {
+      portfolio = portfolio * 1.25 + (projection.data[y]?.yearTaxSavings ?? 0);
+    }
+    return portfolio;
+  }, [projection]);
+  const taxReinvestMonthlyCF = taxReinvestWealth * (capRate / 100) / 12;
+
+  // Cash-out refi estimate: 70% LTV refi two years after buying phase ends
+  const refiYear    = Math.min(buyingYears + 2, TOTAL_YEARS);
+  const refiD       = projection.data[refiYear];
+  const refiCashOut = refiD
+    ? Math.max(0, (0.70 * refiD.totalDealValue - refiD.totalLoanBalance) * (equityPct / 100))
+    : 0;
+  const refiExtraWealth     = refiCashOut > 0 ? refiCashOut * Math.pow(1.25, TOTAL_YEARS - refiYear) : 0;
+  const refiExtraMonthlyCF  = refiExtraWealth * (capRate / 100) / 12;
 
   const sharedSidebarProps = {
     income, setIncome, stateRate, setStateRate, enoughNumber, setEnoughNumber,
@@ -344,6 +365,104 @@ export default function App() {
               showStockAlt={showStockAlt}
               isDark={isDark}
             />
+
+            {/* Cashflow Chart */}
+            <CashflowChart
+              data={projection.data}
+              enoughNumber={enoughNumber}
+              isReachable={projection.isReachable}
+              yearsToReach={projection.yearsToReach}
+              totalYears={TOTAL_YEARS}
+              isDark={isDark}
+            />
+
+            {/* Optimizations */}
+            <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
+              <div className="px-6 pt-5 pb-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Unlock Even More — Advanced Strategies</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                  These are additive on top of the base scenario. All estimates use the settings above.
+                </p>
+              </div>
+              <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                {/* Refi Cycle */}
+                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
+                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Refi Cycle</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Cash-out refi at 70% LTV in Y{refiYear} (post-buying + appreciation buffer),
+                    extracting equity and reinvesting at 25% annualized through Y{TOTAL_YEARS}.
+                    Repeating every few years multiplies the effect further.
+                  </p>
+                  <div className="pt-2 border-t border-violet-500/20 space-y-1.5 text-xs">
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-500">Equity extracted Y{refiYear}</span>
+                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">{fmt(refiCashOut)}</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-500">Extra wealth by Y{TOTAL_YEARS}</span>
+                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(refiExtraWealth)}</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-500">Extra cashflow</span>
+                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(refiExtraMonthlyCF)}/mo</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax Reinvestment */}
+                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
+                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Tax Reinvestment</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Every year, instead of keeping your tax savings as cash, you redeploy them into
+                    commercial real estate at a 25% annualized return — compounding year over year.
+                  </p>
+                  <div className="pt-2 border-t border-violet-500/20 space-y-1.5 text-xs">
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-500">Extra wealth by Y{TOTAL_YEARS}</span>
+                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(taxReinvestWealth)}</span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      <span className="text-slate-500">Extra cashflow at {capRate}% cap</span>
+                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(taxReinvestMonthlyCF)}/mo</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CRE + Stocks */}
+                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
+                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">CRE + Stocks</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    This is not a binary choice. You're already investing {savingsRate}% of your after-tax
+                    income into stocks — CRE is the multiplier on top.
+                  </p>
+                  <ul className="pt-2 border-t border-violet-500/20 space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-violet-400 flex-shrink-0">·</span>
+                      Keep your current savings rate and compound in stocks as you do today
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-violet-400 flex-shrink-0">·</span>
+                      Once free, redeploy CRE cashflow into stocks for a second compounding engine
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="text-violet-400 flex-shrink-0">·</span>
+                      Depreciation shelters your W-2 taxes, accelerating <em>both</em> paths simultaneously
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+            </section>
 
             {/* Footnote */}
             <p className="text-center text-xs text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed pb-6">
