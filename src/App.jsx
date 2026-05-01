@@ -41,7 +41,7 @@ export default function App() {
   const [showStockAlt, setShowStockAlt]             = useState(DEFAULTS.showStockAlt);
   const [savingsRate, setSavingsRate]               = useState(DEFAULTS.savingsRate);
   const [stockReturn, setStockReturn]               = useState(DEFAULTS.stockReturn);
-  const [horizon, setHorizon]                       = useState(5);
+  const [horizon, setHorizon]                       = useState(1);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
   const [isDark, setIsDark]                         = useState(false);
