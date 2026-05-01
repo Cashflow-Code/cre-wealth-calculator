@@ -117,18 +117,6 @@ describe('computeProjection', () => {
   });
 
   describe('loan modeling', () => {
-    it('no loan: capitalDeployed = full purchase price * equityRate', () => {
-      const { data } = computeProjection({ ...defaults, ltv: 0, equityPct: 100 });
-      // Year 1: 2 properties * $2M * 100% equity, no loan
-      expect(data[1].capitalDeployed).toBeCloseTo(4_000_000);
-    });
-
-    it('80% LTV: capitalDeployed is 20% of purchase price', () => {
-      const { data } = computeProjection({ ...defaults, ltv: 80, equityPct: 100 });
-      // Year 1: 2 * $2M * 20% down = $800K
-      expect(data[1].capitalDeployed).toBeCloseTo(800_000);
-    });
-
     it('loan reduces net cashflow vs no loan', () => {
       const noLoan = computeProjection({ ...defaults, ltv: 0 });
       const withLoan = computeProjection({ ...defaults, ltv: 75 });

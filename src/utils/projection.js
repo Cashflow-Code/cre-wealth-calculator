@@ -93,7 +93,7 @@ export function computeProjection({
       totalDealAssetValue      += totalPurchase * (1 + forcedApprecRate);
       totalDealMonthlyCashflow += totalPurchase * capRateDecimal / 12;
       depPool                  += totalPurchase * (depreciation / 100) * equityRate;
-      capitalDeployed          += downPayment * equityRate;
+      // capitalDeployed stays 0: investor raises capital / uses creative financing
 
       if (loanPrincipal > 0) {
         loanCohorts.push({

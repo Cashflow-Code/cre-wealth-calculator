@@ -20,7 +20,6 @@ const DEFAULTS = {
   capRate: 10, depreciation: 40, depDeferYears: 0, equityPct: 25,
   forcedAppreciation: 30, annualAppreciation: 10, cashflowGrowth: 3,
   showStockAlt: false, savingsRate: 20, stockReturn: 8,
-  ltv: 0, loanRate: 6.5, loanTerm: 25,
 };
 
 export default function App() {
@@ -40,9 +39,6 @@ export default function App() {
   const [showStockAlt, setShowStockAlt]             = useState(DEFAULTS.showStockAlt);
   const [savingsRate, setSavingsRate]               = useState(DEFAULTS.savingsRate);
   const [stockReturn, setStockReturn]               = useState(DEFAULTS.stockReturn);
-  const [ltv, setLtv]                               = useState(DEFAULTS.ltv);
-  const [loanRate, setLoanRate]                     = useState(DEFAULTS.loanRate);
-  const [loanTerm, setLoanTerm]                     = useState(DEFAULTS.loanTerm);
   const [horizon, setHorizon]                       = useState(5);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
@@ -62,20 +58,16 @@ export default function App() {
     setAnnualAppreciation(DEFAULTS.annualAppreciation);
     setCashflowGrowth(DEFAULTS.cashflowGrowth);       setShowStockAlt(DEFAULTS.showStockAlt);
     setSavingsRate(DEFAULTS.savingsRate);             setStockReturn(DEFAULTS.stockReturn);
-    setLtv(DEFAULTS.ltv);                            setLoanRate(DEFAULTS.loanRate);
-    setLoanTerm(DEFAULTS.loanTerm);
   };
 
   const projection = useMemo(() => computeProjection({
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
-    ltv, loanRate, loanTerm,
   }), [
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
-    ltv, loanRate, loanTerm,
   ]);
 
   const horizonData        = projection.data[horizon];
@@ -90,7 +82,6 @@ export default function App() {
     propertyValue, setPropertyValue, propertiesPerYear, setPropertiesPerYear,
     buyingYears, setBuyingYears, capRate, setCapRate, equityPct, setEquityPct,
     depreciation, setDepreciation, depDeferYears, setDepDeferYears,
-    ltv, setLtv, loanRate, setLoanRate, loanTerm, setLoanTerm,
     forcedAppreciation, setForcedAppreciation,
     annualAppreciation, setAnnualAppreciation,
     cashflowGrowth, setCashflowGrowth,
@@ -207,8 +198,8 @@ export default function App() {
                         }
                         icon={TrendingUp} tone="emerald" />
                       <MetricTile label="Cash Deployed"
-                        value={fmt(horizonData.capitalDeployed)}
-                        sublabel={ltv > 0 ? `${ltv}% LTV · ${100 - ltv}% down` : 'All cash (no loan)'}
+                        value="$0"
+                        sublabel="Creative financing · no personal cash"
                         icon={Coins} tone="emerald" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
@@ -223,7 +214,7 @@ export default function App() {
                         </ContrastBullet>
                       ) : (
                         <ContrastBullet tone="amber">
-                          You'd need <strong>{projection.propsNeeded === Infinity ? '∞' : projection.propsNeeded} properties</strong> for {fmt(enoughNumber)}/mo — adjust LTV, cap rate, or equity stake
+                          You'd need <strong>{projection.propsNeeded === Infinity ? '∞' : projection.propsNeeded} properties</strong> for {fmt(enoughNumber)}/mo — adjust cap rate or equity stake
                         </ContrastBullet>
                       )}
                       <ContrastBullet tone="emerald">
@@ -310,8 +301,7 @@ export default function App() {
             <p className="text-center text-xs text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed pb-6">
               Buying years 1–{buyingYears}, hold through year {TOTAL_YEARS}.
               Year-1 deal jumps {forcedAppreciation}% (forced), then {annualAppreciation}%/yr after.
-              Your equity = {equityPct}% share of total deal value.
-              {ltv > 0 ? ` ${ltv}% LTV at ${loanRate}% over ${loanTerm} yrs.` : ' No loan modeled.'}
+              Your equity = {equityPct}% share of total deal value. Creative financing — no personal cash.
               Cashflow grows {cashflowGrowth}%/yr.
               Federal tax via 2024 brackets + {stateRate}% state.
               {depDeferYears > 0 && ` Depreciation deferred ${depDeferYears}y.`}

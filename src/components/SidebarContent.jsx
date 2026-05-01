@@ -30,8 +30,6 @@ export default function SidebarContent({
   propertyValue, setPropertyValue, propertiesPerYear, setPropertiesPerYear,
   buyingYears, setBuyingYears, capRate, setCapRate, equityPct, setEquityPct,
   depreciation, setDepreciation, depDeferYears, setDepDeferYears,
-  // loan
-  ltv, setLtv, loanRate, setLoanRate, loanTerm, setLoanTerm,
   // growth
   forcedAppreciation, setForcedAppreciation,
   annualAppreciation, setAnnualAppreciation,
@@ -133,25 +131,6 @@ export default function SidebarContent({
             ? 'You can deduct today (W-2 + REPS)'
             : 'Deferred — accumulates until eligible (H1B, pre-REPS)'
           } />
-      </section>
-
-      {/* Loan */}
-      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-4">
-        <SectionHeader icon={Building2} label="Loan / Leverage" iconColor="text-violet-500 dark:text-violet-400" />
-        <Slider label="LTV (Loan-to-Value)" value={ltv} onChange={setLtv}
-          min={0} max={80} step={5} format={(v) => (v === 0 ? 'None (all cash)' : `${v}%`)}
-          sublabel={ltv === 0 ? 'No debt — all cash' : `${100 - ltv}% down per property`} />
-        {ltv > 0 && (
-          <>
-            <Slider label="Loan Interest Rate" value={loanRate} onChange={setLoanRate}
-              min={3} max={12} step={0.25} format={(v) => `${v}%`}
-              sublabel="Annual rate on commercial loan" />
-            <Slider label="Loan Term" value={loanTerm} onChange={setLoanTerm}
-              min={10} max={30} step={1}
-              format={(v) => `${v} yrs`}
-              sublabel="Amortization period" />
-          </>
-        )}
       </section>
 
       {/* Growth */}
