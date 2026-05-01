@@ -3,7 +3,7 @@ import {
   TrendingUp, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
   Coins, PanelLeftOpen, Menu, Sun, Moon, Sparkles,
-  RefreshCw, Layers,
+  RefreshCw,
 } from 'lucide-react';
 import Sidebar from './components/Sidebar.jsx';
 import MobileSidebar from './components/MobileSidebar.jsx';
@@ -21,7 +21,7 @@ const DEFAULTS = {
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
   capRate: 10, depreciation: 35, depDeferYears: 0, equityPct: 33,
   forcedAppreciation: 30, annualAppreciation: 10, cashflowGrowth: 3,
-  showStockAlt: false, savingsRate: 20, stockReturn: 8,
+  showStockAlt: true, savingsRate: 20, stockReturn: 8,
 };
 
 export default function App() {
@@ -99,6 +99,8 @@ export default function App() {
   const refiExtraWealth     = refiCashOut > 0 ? refiCashOut * Math.pow(1.25, TOTAL_YEARS - refiYear) : 0;
   const refiExtraMonthlyCF  = refiExtraWealth * (capRate / 100) / 12;
 
+  const finalStockBalance = projection.data[TOTAL_YEARS].stockBalance;
+
   const sharedSidebarProps = {
     income, setIncome, stateRate, setStateRate, enoughNumber, setEnoughNumber,
     propertyValue, setPropertyValue, propertiesPerYear, setPropertiesPerYear,
@@ -109,7 +111,7 @@ export default function App() {
     cashflowGrowth, setCashflowGrowth,
     showStockAlt, setShowStockAlt, savingsRate, setSavingsRate, stockReturn, setStockReturn,
     annualStockDeposit, totalStockInvested,
-    finalStockBalance: projection.data[TOTAL_YEARS].stockBalance,
+    finalStockBalance,
     onReset: resetToDefaults,
   };
 
@@ -322,7 +324,7 @@ export default function App() {
             {/* Zero Cash Required callout */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital does this require?</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
               </div>
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 {/* Big $0 */}
@@ -376,91 +378,120 @@ export default function App() {
               isDark={isDark}
             />
 
-            {/* Optimizations */}
+            {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Unlock Even More — Advanced Strategies</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Other Optimizations You Can Perform</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
-                  These are additive on top of the base scenario. All estimates use the settings above.
+                  These compound on top of your base scenario. All estimates use the settings above.
                 </p>
               </div>
-              <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                 {/* Refi Cycle */}
-                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
-                  <div className="flex items-center gap-2">
+                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] overflow-hidden">
+                  <div className="px-5 pt-4 pb-3 flex items-center gap-2 border-b border-violet-500/20">
                     <RefreshCw className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
                     <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Refi Cycle</span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Cash-out refi at 70% LTV in Y{refiYear} (post-buying + appreciation buffer),
-                    extracting equity and reinvesting at 25% annualized through Y{TOTAL_YEARS}.
-                    Repeating every few years multiplies the effect further.
-                  </p>
-                  <div className="pt-2 border-t border-violet-500/20 space-y-1.5 text-xs">
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-500">Equity extracted Y{refiYear}</span>
-                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">{fmt(refiCashOut)}</span>
+                  <div className="flex items-stretch gap-0 px-5 py-5">
+                    <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
+                      <div className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60">Extra wealth</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(refiExtraWealth)}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">by Y{TOTAL_YEARS}</div>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-500">Extra wealth by Y{TOTAL_YEARS}</span>
-                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(refiExtraWealth)}</span>
-                    </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-500">Extra cashflow</span>
-                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(refiExtraMonthlyCF)}/mo</span>
+                    <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">Cash-out refi at 70% LTV</strong> in Y{refiYear} — pull {fmt(refiCashOut)} of equity tax-free
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">Reinvest at 25% IRR</strong> for +{fmt(refiExtraMonthlyCF)}/mo extra cashflow
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">Repeat every few years</strong> to multiply the snowball effect
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Tax Reinvestment */}
-                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
-                  <div className="flex items-center gap-2">
+                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] overflow-hidden">
+                  <div className="px-5 pt-4 pb-3 flex items-center gap-2 border-b border-violet-500/20">
                     <TrendingUp className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
                     <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Tax Reinvestment</span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Every year, instead of keeping your tax savings as cash, you redeploy them into
-                    commercial real estate at a 25% annualized return — compounding year over year.
-                  </p>
-                  <div className="pt-2 border-t border-violet-500/20 space-y-1.5 text-xs">
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-500">Extra wealth by Y{TOTAL_YEARS}</span>
-                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(taxReinvestWealth)}</span>
+                  <div className="flex items-stretch gap-0 px-5 py-5">
+                    <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
+                      <div className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60">Extra wealth</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(taxReinvestWealth)}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">by Y{TOTAL_YEARS}</div>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-slate-500">Extra cashflow at {capRate}% cap</span>
-                      <span className="font-bold text-violet-500 dark:text-violet-400 tabular-nums">+{fmt(taxReinvestMonthlyCF)}/mo</span>
+                    <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">Redeploy yearly tax savings</strong> into more CRE deals instead of keeping cash
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">25% annualized return</strong> compounding year over year
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestMonthlyCF)}/mo</strong> additional cashflow at {capRate}% cap
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* CRE + Stocks */}
-                <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
-                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">CRE + Stocks</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    This is not a binary choice. You're already investing {savingsRate}% of your after-tax
-                    income into stocks — CRE is the multiplier on top.
-                  </p>
-                  <ul className="pt-2 border-t border-violet-500/20 space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-violet-400 flex-shrink-0">·</span>
-                      Keep your current savings rate and compound in stocks as you do today
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-violet-400 flex-shrink-0">·</span>
-                      Once free, redeploy CRE cashflow into stocks for a second compounding engine
-                    </li>
-                    <li className="flex items-start gap-1.5">
-                      <span className="text-violet-400 flex-shrink-0">·</span>
-                      Depreciation shelters your W-2 taxes, accelerating <em>both</em> paths simultaneously
-                    </li>
-                  </ul>
-                </div>
+              </div>
+            </section>
 
+            {/* But Isn't Stock Investing More Passive? */}
+            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
+              <div className="px-6 pt-5 pb-2">
+                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
+              </div>
+              <div className="flex items-stretch gap-0 px-6 pb-6">
+                <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60">Stocks alone (Y{TOTAL_YEARS})</div>
+                  <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none mt-1.5">{fmt(finalStockBalance)}</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">{savingsRate}% of after-tax</div>
+                </div>
+                <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">It's not binary</strong> — your stock portfolio compounds the same {fmt(finalStockBalance)} regardless of whether you do CRE
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">You'll have MORE to invest in stocks</strong> — CRE cashflow + tax savings funnel back into your brokerage
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">Two compounding engines</strong> — depreciation accelerates both paths simultaneously
+                    </p>
+                  </div>
+                </div>
               </div>
             </section>
 
