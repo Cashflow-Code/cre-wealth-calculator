@@ -19,8 +19,8 @@ import { computeTotalTax } from './utils/tax.js';
 const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
-  capRate: 10, depreciation: 35, depDeferYears: 0, equityPct: 33,
-  forcedAppreciation: 30, annualAppreciation: 10, cashflowGrowth: 3,
+  capRate: 12, depreciation: 35, depDeferYears: 0, equityPct: 33,
+  forcedAppreciation: 30, annualAppreciation: 4, cashflowGrowth: 3,
   showStockAlt: true, savingsRate: 20, stockReturn: 8,
 };
 
@@ -45,6 +45,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
   const [isDark, setIsDark]                         = useState(true);
+  const [refiInterval, setRefiInterval]             = useState(5);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -80,24 +81,49 @@ export default function App() {
   const annualStockDeposit = afterTaxIncome * (savingsRate / 100);
   const totalStockInvested = annualStockDeposit * TOTAL_YEARS;
 
-  // Tax savings reinvested at 25%/yr compounded to Y20
-  const taxReinvestWealth = useMemo(() => {
-    let portfolio = 0;
+  const taxReinvestCalc = useMemo(() => {
+    const apprecRate     = annualAppreciation / 100;
+    const capRateDecimal = capRate / 100;
+    let wealthY20 = 0, runRateMonthlyCF = 0, cumulativeCF = 0;
     for (let y = 1; y <= TOTAL_YEARS; y++) {
-      portfolio = portfolio * 1.25 + (projection.data[y]?.yearTaxSavings ?? 0);
+      const savings = projection.data[y]?.yearTaxSavings ?? 0;
+      if (savings <= 0) continue;
+      wealthY20        += savings * Math.pow(1 + apprecRate, TOTAL_YEARS - y);
+      runRateMonthlyCF += savings * capRateDecimal / 12;
+      cumulativeCF     += savings * capRateDecimal * (TOTAL_YEARS - y + 1);
     }
-    return portfolio;
-  }, [projection]);
-  const taxReinvestMonthlyCF = taxReinvestWealth * (capRate / 100) / 12;
+    return { wealthY20, runRateMonthlyCF, cumulativeCF };
+  }, [projection, annualAppreciation, capRate]);
 
-  // Cash-out refi estimate: 70% LTV refi two years after buying phase ends
-  const refiYear    = Math.min(buyingYears + 2, TOTAL_YEARS);
-  const refiD       = projection.data[refiYear];
-  const refiCashOut = refiD
-    ? Math.max(0, (0.70 * refiD.totalDealValue - refiD.totalLoanBalance) * (equityPct / 100))
-    : 0;
-  const refiExtraWealth     = refiCashOut > 0 ? refiCashOut * Math.pow(1.25, TOTAL_YEARS - refiYear) : 0;
-  const refiExtraMonthlyCF  = refiExtraWealth * (capRate / 100) / 12;
+  const refiCalc = useMemo(() => {
+    const apprecRate     = annualAppreciation / 100;
+    const capRateDecimal = capRate / 100;
+    const equityRate     = equityPct / 100;
+
+    let cumulativeRefiDebt = 0;
+    const deployments = [];
+    const firstYear = Math.min(buyingYears + 2, TOTAL_YEARS);
+
+    for (let y = firstYear; y <= TOTAL_YEARS; y += refiInterval) {
+      const d = projection.data[y];
+      if (!d) break;
+      const maxBorrow = Math.max(0,
+        (0.70 * d.totalDealValue - d.totalLoanBalance) * equityRate - cumulativeRefiDebt
+      );
+      if (maxBorrow <= 0) break;
+      cumulativeRefiDebt += maxBorrow;
+      deployments.push({ year: y, amount: maxBorrow });
+    }
+
+    const wealthY20 = deployments.reduce((s, { year, amount }) =>
+      s + amount * Math.pow(1 + apprecRate, TOTAL_YEARS - year), 0);
+    const runRateMonthlyCF = deployments.reduce((s, { amount }) =>
+      s + amount * capRateDecimal / 12, 0);
+    const cumulativeCF = deployments.reduce((s, { year, amount }) =>
+      s + amount * capRateDecimal * (TOTAL_YEARS - year + 1), 0);
+
+    return { deployments, wealthY20, runRateMonthlyCF, cumulativeCF };
+  }, [projection, annualAppreciation, capRate, equityPct, buyingYears, refiInterval]);
 
   const finalStockBalance = projection.data[TOTAL_YEARS].stockBalance;
 
@@ -394,29 +420,39 @@ export default function App() {
                     <RefreshCw className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
                     <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Refi Cycle</span>
                   </div>
+                  <div className="px-5 pt-3 pb-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">Refi every</span>
+                      <span className="text-[10px] font-bold text-violet-400">{refiInterval}y</span>
+                    </div>
+                    <input type="range" min={2} max={10} step={1} value={refiInterval}
+                      onChange={e => setRefiInterval(Number(e.target.value))}
+                      className="w-full h-1 accent-violet-500" />
+                  </div>
                   <div className="flex items-stretch gap-0 px-5 py-5">
                     <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
                       <div className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60">Extra wealth</div>
-                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(refiExtraWealth)}</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(refiCalc.wealthY20)}</div>
                       <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">by Y{TOTAL_YEARS}</div>
                     </div>
                     <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">Cash-out refi at 70% LTV</strong> in Y{refiYear} — pull {fmt(refiCashOut)} of equity tax-free
+                          <strong className="text-violet-500 dark:text-violet-400">70% LTV refi every {refiInterval}y</strong>
+                          {' '}— first pull Y{refiCalc.deployments[0]?.year ?? buyingYears + 2}: {fmt(refiCalc.deployments[0]?.amount ?? 0)} ({refiCalc.deployments.length} event{refiCalc.deployments.length !== 1 ? 's' : ''} total)
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">Reinvest at 25% IRR</strong> for +{fmt(refiExtraMonthlyCF)}/mo extra cashflow
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">Repeat every few years</strong> to multiply the snowball effect
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.cumulativeCF)} cumulative</strong> cashflow over the period
                         </p>
                       </div>
                     </div>
@@ -432,7 +468,7 @@ export default function App() {
                   <div className="flex items-stretch gap-0 px-5 py-5">
                     <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
                       <div className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60">Extra wealth</div>
-                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(taxReinvestWealth)}</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(taxReinvestCalc.wealthY20)}</div>
                       <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">by Y{TOTAL_YEARS}</div>
                     </div>
                     <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
@@ -445,13 +481,13 @@ export default function App() {
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">25% annualized return</strong> compounding year over year
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestMonthlyCF)}/mo</strong> additional cashflow at {capRate}% cap
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestCalc.cumulativeCF)} cumulative</strong> cashflow over the period
                         </p>
                       </div>
                     </div>
