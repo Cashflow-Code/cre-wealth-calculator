@@ -64,6 +64,7 @@ export default function App() {
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
+    ltv: 100, loanRate: 6.5, loanTerm: 25,
   }), [
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
@@ -249,21 +250,21 @@ export default function App() {
                       <AlertTriangle className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-widest">If You Do Nothing</span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-500 italic -mt-2">Same number, opposite side.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <MetricTile label="Years Working"
-                        value={`${STATUS_QUO_YEARS}+`} sublabel="Time for paychecks"
+                        value={`${STATUS_QUO_YEARS}+`} sublabel="Trading time for money"
                         icon={Clock} tone="red" />
-                      <MetricTile label="Cashflow"
+                      <MetricTile label="Passive Income"
                         value="$0/mo" sublabel="Paycheck-to-paycheck"
                         icon={Banknote} tone="red" />
                       <MetricTile label="Taxes Lost"
                         value={fmt(horizonData.cumulativeTaxesPaid)}
                         sublabel={`${fmt(horizonData.yearTaxesPaid)}/yr burn`}
                         icon={Receipt} tone="red" />
-                      <MetricTile label="Passive Income"
-                        value="$0/mo" sublabel="Forever, without action"
-                        icon={Banknote} tone="red" />
+                      <MetricTile label="1 Layoff Away"
+                        value="56%"
+                        sublabel="of workers fear job loss"
+                        icon={User} tone="red" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
                       <ContrastBullet tone="red">
