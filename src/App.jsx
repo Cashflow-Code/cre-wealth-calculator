@@ -210,21 +210,76 @@ export default function App() {
             <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-amber-500/[0.07] dark:via-[#0d1630] dark:to-red-500/[0.05] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
               <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="relative">
-                <div className="flex items-center gap-2 text-amber-500/70 dark:text-amber-400/70 mb-4">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-widest">{horizon}-Year Opportunity Cost</span>
-                </div>
-                <div
-                  className="text-5xl sm:text-7xl lg:text-8xl font-black text-amber-500 dark:text-amber-400 tabular-nums leading-none"
-                  style={{ textShadow: '0 0 60px rgba(245,158,11,0.25)' }}
-                >
-                  {fmt(horizonData.totalProfits)}
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-3 max-w-xl">
-                  Equity appreciation + principal paydown + cashflow + tax savings — over {horizon} {horizon === 1 ? 'year' : 'years'}.
-                </p>
+                <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-10 mb-8">
 
-                <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {/* Left: badge + big number + subtitle */}
+                  <div className="flex-shrink-0 lg:max-w-sm xl:max-w-md">
+                    <div className="flex items-center gap-2 text-amber-500/70 dark:text-amber-400/70 mb-4">
+                      <AlertTriangle className="w-4 h-4" />
+                      <span className="text-xs font-bold uppercase tracking-widest">{horizon}-Year Opportunity Cost</span>
+                    </div>
+                    <div
+                      className="text-5xl sm:text-7xl lg:text-8xl font-black text-amber-500 dark:text-amber-400 tabular-nums leading-none"
+                      style={{ textShadow: '0 0 60px rgba(245,158,11,0.25)' }}
+                    >
+                      {fmt(horizonData.totalProfits)}
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-3">
+                      5 wealth engines working simultaneously — over {horizon} {horizon === 1 ? 'year' : 'years'}.
+                    </p>
+                  </div>
+
+                  {/* Right: CRE five-engine benefit showcase */}
+                  <div className="flex-1 space-y-2">
+                    {[
+                      {
+                        icon: Banknote,
+                        label: 'Cashflow',
+                        value: `${fmt(horizonData.monthlyCashflow)}/mo`,
+                        sub: `${fmt(horizonData.cumulativeCashflow)} cumulative · tenants fund your lifestyle`,
+                      },
+                      {
+                        icon: Receipt,
+                        label: 'Tax Savings',
+                        value: fmt(horizonData.cumulativeTaxSavings),
+                        sub: 'W2 income sheltered via cost segregation & depreciation',
+                      },
+                      {
+                        icon: TrendingUp,
+                        label: 'Equity & Appreciation',
+                        value: fmt(horizonData.equityGain),
+                        sub: `${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio · forced + market growth`,
+                      },
+                      {
+                        icon: Coins,
+                        label: 'Principal Paydown',
+                        value: fmt(horizonData.cumulativePrincipalPaydown),
+                        sub: 'Tenants amortize the loan · your equity builds while you sleep',
+                      },
+                      {
+                        icon: Zap,
+                        label: 'Positive Leverage',
+                        value: `+${Math.max(0, capRate - 6.5).toFixed(1)}% spread`,
+                        sub: 'Cap rate exceeds debt cost · inflation erodes your fixed-rate debt · repay in cheaper future dollars',
+                      },
+                    ].map(({ icon: Icon, label, value, sub }) => (
+                      <div key={label} className="flex items-start gap-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/10 px-4 py-3">
+                        <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Icon className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-600/70 dark:text-amber-400/70">{label}</span>
+                            <span className="text-sm font-black text-amber-500 dark:text-amber-400 tabular-nums">{value}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{sub}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                   {/* Take Action */}
                   <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 space-y-4 relative overflow-hidden">
