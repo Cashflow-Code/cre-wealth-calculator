@@ -46,6 +46,7 @@ export default function App() {
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
   const [isDark, setIsDark]                         = useState(true);
   const [refiInterval, setRefiInterval]             = useState(5);
+  const [reinvestMode, setReinvestMode]             = useState('both');
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -81,19 +82,23 @@ export default function App() {
   const annualStockDeposit = afterTaxIncome * (savingsRate / 100);
   const totalStockInvested = annualStockDeposit * TOTAL_YEARS;
 
-  const taxReinvestCalc = useMemo(() => {
+  const reinvestCalc = useMemo(() => {
     const apprecRate     = annualAppreciation / 100;
     const capRateDecimal = capRate / 100;
     let wealthY20 = 0, runRateMonthlyCF = 0, cumulativeCF = 0;
     for (let y = 1; y <= TOTAL_YEARS; y++) {
-      const savings = projection.data[y]?.yearTaxSavings ?? 0;
-      if (savings <= 0) continue;
-      wealthY20        += savings * Math.pow(1 + apprecRate, TOTAL_YEARS - y);
-      runRateMonthlyCF += savings * capRateDecimal / 12;
-      cumulativeCF     += savings * capRateDecimal * (TOTAL_YEARS - y + 1);
+      const d = projection.data[y];
+      if (!d) continue;
+      let deployed = 0;
+      if (reinvestMode === 'tax'      || reinvestMode === 'both') deployed += d.yearTaxSavings  ?? 0;
+      if (reinvestMode === 'cashflow' || reinvestMode === 'both') deployed += d.annualCashflow  ?? 0;
+      if (deployed <= 0) continue;
+      wealthY20        += deployed * Math.pow(1 + apprecRate, TOTAL_YEARS - y);
+      runRateMonthlyCF += deployed * capRateDecimal / 12;
+      cumulativeCF     += deployed * capRateDecimal * (TOTAL_YEARS - y + 1);
     }
     return { wealthY20, runRateMonthlyCF, cumulativeCF };
-  }, [projection, annualAppreciation, capRate]);
+  }, [projection, annualAppreciation, capRate, reinvestMode]);
 
   const refiCalc = useMemo(() => {
     const apprecRate     = annualAppreciation / 100;
@@ -401,6 +406,7 @@ export default function App() {
               isReachable={projection.isReachable}
               yearsToReach={projection.yearsToReach}
               totalYears={TOTAL_YEARS}
+              buyingYears={buyingYears}
               isDark={isDark}
             />
 
@@ -459,35 +465,58 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Tax Reinvestment */}
+                {/* Tax & Cashflow Reinvestment */}
                 <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] overflow-hidden">
                   <div className="px-5 pt-4 pb-3 flex items-center gap-2 border-b border-violet-500/20">
                     <TrendingUp className="w-4 h-4 text-violet-500 dark:text-violet-400 flex-shrink-0" />
-                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Tax Reinvestment</span>
+                    <span className="text-xs font-bold text-violet-500 dark:text-violet-400 uppercase tracking-widest">Tax &amp; Cashflow Reinvestment</span>
+                  </div>
+                  <div className="px-5 pt-3 pb-1">
+                    <div className="grid grid-cols-3 gap-1">
+                      {[
+                        { id: 'tax',      label: 'Tax only' },
+                        { id: 'cashflow', label: 'Cashflow' },
+                        { id: 'both',     label: 'Both' },
+                      ].map(({ id, label }) => (
+                        <button
+                          key={id}
+                          onClick={() => setReinvestMode(id)}
+                          className={`py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wide transition-colors ${
+                            reinvestMode === id
+                              ? 'bg-violet-500 text-white'
+                              : 'bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex items-stretch gap-0 px-5 py-5">
                     <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
                       <div className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60">Extra wealth</div>
-                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(taxReinvestCalc.wealthY20)}</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none mt-1">+{fmt(reinvestCalc.wealthY20)}</div>
                       <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">by Y{TOTAL_YEARS}</div>
                     </div>
                     <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">Redeploy yearly tax savings</strong> into more CRE deals instead of keeping cash
+                          <strong className="text-violet-500 dark:text-violet-400">
+                            {reinvestMode === 'tax' ? 'Yearly tax savings' : reinvestMode === 'cashflow' ? 'Yearly cashflow' : 'Tax savings + cashflow'}
+                          </strong>{' '}redeployed into more CRE deals
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(taxReinvestCalc.cumulativeCF)} cumulative</strong> cashflow over the period
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.cumulativeCF)} cumulative</strong> cashflow over the period
                         </p>
                       </div>
                     </div>
@@ -504,9 +533,9 @@ export default function App() {
               </div>
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60">Stocks alone (Y{TOTAL_YEARS})</div>
-                  <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none mt-1.5">{fmt(finalStockBalance)}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">{savingsRate}% of after-tax</div>
+                  <div className="text-sm font-black text-sky-500 dark:text-sky-400 text-center mb-1">Yes — do both</div>
+                  <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 text-center">Stocks alone · Y{TOTAL_YEARS} · {savingsRate}% of after-tax</div>
                 </div>
                 <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
                   <div className="flex items-start gap-2.5">

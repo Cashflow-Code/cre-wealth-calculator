@@ -120,14 +120,14 @@ export function computeProjection({
       }
     }
 
-    // Principal paid down this year across all active cohorts
+    // Principal paid down this year across all active cohorts (age=0 = origination year)
     let yearPrincipalPaydown = 0;
     for (const cohort of loanCohorts) {
       const age = year - cohort.originYear;
-      if (age > 0 && age <= loanTerm) {
+      if (age >= 0 && age < loanTerm) {
         yearPrincipalPaydown += (
-          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age - 1) -
-          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age)
+          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age) -
+          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age + 1)
         );
       }
     }
@@ -141,26 +141,14 @@ export function computeProjection({
     const yourAnnualCashflow   = yourMonthlyCashflow * 12;
     cumulativeCashflow        += yourAnnualCashflow;
 
-    // Tax savings via depreciation — bracket-accurate
+    // Tax savings via depreciation — W2 income only (cashflow is tax-free via REPS, shown gross)
     let yearTaxSavings  = 0;
     const depEligible   = year >= eligibleStartYear;
 
     if (depEligible) {
-      if (isBuying) {
-        // Depreciation offsets W2 + cashflow (active investor / REPS during buying)
-        const grossIncome = income + yourAnnualCashflow;
-        const used        = Math.min(depPool, Math.max(0, grossIncome));
-        depPool          -= used;
-        yearTaxSavings    = taxSavingsFromDeduction(grossIncome, used, stateRateDecimal);
-      } else {
-        // Holding phase: REPS makes cashflow tax-free; remaining depPool shelters W2
-        const cashflowTax  = computeTotalTax(income + yourAnnualCashflow, stateRateDecimal)
-                           - computeTotalTax(income, stateRateDecimal);
-        const w2Sheltered  = Math.min(depPool, income);
-        depPool           -= w2Sheltered;
-        const w2Savings    = taxSavingsFromDeduction(income, w2Sheltered, stateRateDecimal);
-        yearTaxSavings     = cashflowTax + w2Savings;
-      }
+      const used    = Math.min(depPool, income);
+      depPool      -= used;
+      yearTaxSavings = taxSavingsFromDeduction(income, used, stateRateDecimal);
     }
     cumulativeTaxSavings += yearTaxSavings;
 

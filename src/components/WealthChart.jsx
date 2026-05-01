@@ -66,7 +66,19 @@ export default function WealthChart({
             <ReferenceLine
               x={`Y${yearsToReach}`}
               stroke="#10b981" strokeDasharray="2 2"
-              label={{ value: 'Financial Freedom', fill: '#10b981', fontSize: 10, position: 'top', dy: -20 }}
+              label={(props) => {
+                const { viewBox: { x, y } } = props;
+                return (
+                  <text
+                    x={x + 5} y={y + 14}
+                    fill="#10b981" fontSize={10} fontWeight="bold"
+                    textAnchor="start"
+                    transform={`rotate(-90, ${x + 5}, ${y + 14})`}
+                  >
+                    Financial Freedom
+                  </text>
+                );
+              }}
             />
           )}
           <Area type="monotone" dataKey="investorWealth" stroke="none" fill="url(#emeraldGrad)" />
