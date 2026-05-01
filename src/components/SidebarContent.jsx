@@ -7,10 +7,10 @@ import { TOTAL_YEARS } from '../utils/projection.js';
 import { effectiveRate } from '../utils/tax.js';
 
 const STATE_PRESETS = [
-  { label: '0% FL', value: 0, hint: 'FL, TX, WY — No income tax' },
-  { label: '3% CO', value: 3, hint: 'CO, UT — Low tax states' },
-  { label: '5% GA', value: 5, hint: 'GA, VA — Mid tax states' },
-  { label: '9% CA', value: 9, hint: 'CA, NY — High tax states' },
+  { label: 'No',   value: 0, hint: 'FL, TX, WY — No income tax' },
+  { label: 'Low',  value: 3, hint: 'CO, UT — Low tax states' },
+  { label: 'Mid',  value: 5, hint: 'GA, VA — Mid tax states' },
+  { label: 'High', value: 9, hint: 'CA, NY — High tax states' },
 ];
 
 const ENOUGH_PRESETS = [
