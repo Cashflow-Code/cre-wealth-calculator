@@ -1,7 +1,7 @@
 import React from 'react';
 
 const LEVERAGE_PRESETS = [
-  { pct: 33,  label: 'knowledge', desc: 'Standard JV split; you source and manage, partners fund' },
+  { pct: 33,  label: 'knowledge', desc: "Standard split — you bring know-how and connections, leverage other people's money" },
   { pct: 50,  label: 'capital',   desc: 'Equal partnership; you and partner share value equally' },
   { pct: 100, label: 'solo',      desc: 'Full ownership — you source, fund, and operate everything' },
 ];

@@ -34,7 +34,7 @@ describe('EquityInput', () => {
 
   it('shows knowledge description when value is 33', () => {
     render(<EquityInput value={33} onChange={() => {}} />);
-    expect(screen.getByText(/source and manage/i)).toBeTruthy();
+    expect(screen.getByText(/know-how/i)).toBeTruthy();
   });
 
   it('shows solo description when value is 100', () => {
