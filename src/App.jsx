@@ -187,8 +187,8 @@ export default function App() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <MetricTile label="Net Worth"
-                        value={fmt(horizonData.equity)}
-                        sublabel="From appreciation"
+                        value={fmt(horizonData.totalDealValue * equityPct / 100)}
+                        sublabel={`${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio`}
                         icon={Home} tone="emerald" />
                       <MetricTile label="Cashflow"
                         value={`${fmt(horizonData.monthlyCashflow)}/mo`}
@@ -274,8 +274,8 @@ export default function App() {
                         sublabel={`${fmt(horizonData.yearTaxesPaid)}/yr burn`}
                         icon={Receipt} tone="red" />
                       <MetricTile label="1 Layoff Away"
-                        value="91%"
-                        sublabel="lack job security (CNBC/Blind, Aug. 2022)"
+                        value="78%"
+                        sublabel="lack job security (ADP Research, Mar. 2026)"
                         icon={User} tone="red" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
@@ -299,19 +299,37 @@ export default function App() {
             </section>
 
             {/* Zero Cash Required callout */}
-            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] p-5 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Sparkles className="w-5 h-5 text-sky-500" />
+            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
+              <div className="px-6 pt-5 pb-2">
+                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital does this require?</p>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-sky-500 dark:text-sky-400 uppercase tracking-widest mb-1">Zero Cash Required</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  This model assumes you contribute{' '}
-                  <strong className="text-sky-500 dark:text-sky-400">$0 of your own money</strong>.
-                  Instead, you redirect the taxes you're already paying into real estate equity — using your
-                  knowledge to structure deals with creative financing and capital raising. No savings required.
-                  No down payment. Just your expertise and the tax code working for you.
-                </p>
+              <div className="flex items-stretch gap-0 px-6 pb-6">
+                {/* Big $0 */}
+                <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[120px]">
+                  <div className="text-7xl sm:text-8xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">$0</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2">of your money</div>
+                </div>
+                {/* Bullet explanation */}
+                <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">Creative financing &amp; capital raises</strong> — partners fund the deals, you bring the knowledge and structure
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">Redirect taxes you already pay</strong> — depreciation turns your W-2 tax bill into real estate equity
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                      <strong className="text-sky-500 dark:text-sky-400">Tenants pay the mortgage</strong> — principal paydown builds your equity while you sleep
+                    </p>
+                  </div>
+                </div>
               </div>
             </section>
 

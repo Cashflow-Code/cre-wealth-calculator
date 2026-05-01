@@ -1,6 +1,5 @@
 import React from 'react';
 import { User, Building2, TrendingUp, BarChart3, RotateCcw } from 'lucide-react';
-import Slider from './Slider.jsx';
 import EquityInput from './EquityInput.jsx';
 import Switch from './Switch.jsx';
 import { fmt } from '../utils/fmt.js';
@@ -21,6 +20,13 @@ const ENOUGH_PRESETS = [
   { label: '$30K', value: 30_000 },
 ];
 
+const presetButtonClass = (active) =>
+  `py-1 rounded-lg text-[10px] font-bold transition-colors whitespace-nowrap ${
+    active
+      ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
+      : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
+  }`;
+
 function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:text-emerald-400' }) {
   return (
     <div className="flex items-center gap-2">
@@ -30,23 +36,36 @@ function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:t
   );
 }
 
+function Slider({ label, value, onChange, min, max, step, format, sublabel, disabled }) {
+  return (
+    <div className={`space-y-1.5 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+      <div className="flex items-baseline justify-between gap-2">
+        <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{label}</label>
+        <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{format(value)}</span>
+      </div>
+      <input
+        type="range"
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        min={min} max={max} step={step} disabled={disabled}
+        className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:cursor-not-allowed"
+      />
+      {sublabel && <p className="text-[10px] text-slate-500 leading-tight">{sublabel}</p>}
+    </div>
+  );
+}
+
 export default function SidebarContent({
-  // personal
   income, setIncome, stateRate, setStateRate, enoughNumber, setEnoughNumber,
-  // deal
   propertyValue, setPropertyValue, propertiesPerYear, setPropertiesPerYear,
   buyingYears, setBuyingYears, capRate, setCapRate, equityPct, setEquityPct,
   depreciation, setDepreciation, depDeferYears, setDepDeferYears,
-  // growth
   forcedAppreciation, setForcedAppreciation,
   annualAppreciation, setAnnualAppreciation,
   cashflowGrowth, setCashflowGrowth,
-  // stocks
   showStockAlt, setShowStockAlt, savingsRate, setSavingsRate,
   stockReturn, setStockReturn,
-  // derived
   annualStockDeposit, totalStockInvested, finalStockBalance,
-  // actions
   onReset,
 }) {
   const federalEffective = effectiveRate(income);
@@ -55,7 +74,6 @@ export default function SidebarContent({
   return (
     <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
 
-      {/* Reset button */}
       <button
         onClick={onReset}
         className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold transition-colors"
@@ -70,7 +88,6 @@ export default function SidebarContent({
         <Slider label="Annual Income" value={income} onChange={setIncome}
           min={50000} max={2000000} step={10000} format={fmt} />
 
-        {/* Effective rate read-out */}
         <div className="rounded-lg border border-slate-200 dark:border-slate-700/40 bg-slate-100 dark:bg-slate-800/30 px-3 py-2.5 space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-[10px] text-slate-500 font-medium">Federal effective rate</span>
@@ -82,49 +99,45 @@ export default function SidebarContent({
           </div>
         </div>
 
-        {/* State tax presets */}
-        <div className="grid grid-cols-4 gap-1">
-          {STATE_PRESETS.map(({ label, value, hint }) => (
-            <button
-              key={value}
-              onClick={() => setStateRate(value)}
-              title={hint}
-              className={`py-1 rounded-lg text-[10px] font-bold transition-colors whitespace-nowrap ${
-                stateRate === value
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
-                  : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        {/* State Tax — label + presets + slider, matching EquityInput pattern */}
+        <div className="space-y-1.5">
+          <div className="flex items-baseline justify-between gap-2">
+            <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">State Tax Rate</label>
+            <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{stateRate}%</span>
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {STATE_PRESETS.map(({ label, value, hint }) => (
+              <button key={value} onClick={() => setStateRate(value)} title={hint}
+                className={presetButtonClass(stateRate === value)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <input type="range" value={stateRate} onChange={(e) => setStateRate(Number(e.target.value))}
+            min={0} max={15} step={0.5}
+            className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
+          <p className="text-[10px] text-slate-500 leading-tight">Added on top of 2026 federal brackets</p>
         </div>
 
-        <Slider label="State Tax Rate" value={stateRate} onChange={setStateRate}
-          min={0} max={15} step={0.5} format={(v) => `${v}%`}
-          sublabel="Added on top of 2026 federal brackets" />
-
-        {/* Enough number presets */}
-        <div className="grid grid-cols-4 gap-1">
-          {ENOUGH_PRESETS.map(({ label, value }) => (
-            <button
-              key={value}
-              onClick={() => setEnoughNumber(value)}
-              className={`py-1 rounded-lg text-[10px] font-bold transition-colors ${
-                enoughNumber === value
-                  ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
-                  : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        {/* Enough Number — label + presets + slider */}
+        <div className="space-y-1.5">
+          <div className="flex items-baseline justify-between gap-2">
+            <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Enough Number / mo</label>
+            <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">${(enoughNumber / 1000).toFixed(0)}K</span>
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {ENOUGH_PRESETS.map(({ label, value }) => (
+              <button key={value} onClick={() => setEnoughNumber(value)}
+                className={presetButtonClass(enoughNumber === value)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <input type="range" value={enoughNumber} onChange={(e) => setEnoughNumber(Number(e.target.value))}
+            min={2000} max={50000} step={1000}
+            className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
+          <p className="text-[10px] text-slate-500 leading-tight">Monthly passive income to feel free</p>
         </div>
-
-        <Slider label="Enough Number / mo" value={enoughNumber} onChange={setEnoughNumber}
-          min={2000} max={50000} step={1000}
-          format={(v) => `$${(v / 1000).toFixed(0)}K`}
-          sublabel="Monthly passive income to feel free" />
       </section>
 
       {/* Deal Structure */}
