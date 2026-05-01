@@ -5,43 +5,43 @@ import EquityInput from '../components/EquityInput.jsx';
 
 describe('EquityInput', () => {
   it('renders label text for all four presets', () => {
-    render(<EquityInput value={25} onChange={() => {}} />);
-    ['reputation', 'knowledge', 'capital', 'solo'].forEach((label) => {
+    render(<EquityInput value={33} onChange={() => {}} />);
+    ['finder', 'partner', 'co-own', 'solo'].forEach((label) => {
       expect(screen.getByText(label)).toBeTruthy();
     });
   });
 
-  it('fires onChange(10) when reputation preset is clicked', () => {
+  it('fires onChange(3) when finder preset is clicked', () => {
     const onChange = vi.fn();
-    render(<EquityInput value={25} onChange={onChange} />);
-    fireEvent.click(screen.getByText('reputation').closest('button'));
-    expect(onChange).toHaveBeenCalledWith(10);
+    render(<EquityInput value={33} onChange={onChange} />);
+    fireEvent.click(screen.getByText('finder').closest('button'));
+    expect(onChange).toHaveBeenCalledWith(3);
   });
 
-  it('fires onChange(25) when knowledge preset is clicked', () => {
+  it('fires onChange(33) when partner preset is clicked', () => {
     const onChange = vi.fn();
-    render(<EquityInput value={10} onChange={onChange} />);
-    fireEvent.click(screen.getByText('knowledge').closest('button'));
-    expect(onChange).toHaveBeenCalledWith(25);
+    render(<EquityInput value={3} onChange={onChange} />);
+    fireEvent.click(screen.getByText('partner').closest('button'));
+    expect(onChange).toHaveBeenCalledWith(33);
   });
 
-  it('fires onChange(50) when capital preset is clicked', () => {
+  it('fires onChange(50) when co-own preset is clicked', () => {
     const onChange = vi.fn();
-    render(<EquityInput value={25} onChange={onChange} />);
-    fireEvent.click(screen.getByText('capital').closest('button'));
+    render(<EquityInput value={33} onChange={onChange} />);
+    fireEvent.click(screen.getByText('co-own').closest('button'));
     expect(onChange).toHaveBeenCalledWith(50);
   });
 
   it('fires onChange(100) when solo preset is clicked', () => {
     const onChange = vi.fn();
-    render(<EquityInput value={25} onChange={onChange} />);
+    render(<EquityInput value={33} onChange={onChange} />);
     fireEvent.click(screen.getByText('solo').closest('button'));
     expect(onChange).toHaveBeenCalledWith(100);
   });
 
-  it('shows knowledge description when value is 25', () => {
-    render(<EquityInput value={25} onChange={() => {}} />);
-    expect(screen.getByText(/knowledge leverage/i)).toBeTruthy();
+  it('shows partner description when value is 33', () => {
+    render(<EquityInput value={33} onChange={() => {}} />);
+    expect(screen.getByText(/partner deals/i)).toBeTruthy();
   });
 
   it('shows solo description when value is 100', () => {
@@ -59,10 +59,10 @@ describe('EquityInput', () => {
     expect(screen.getByText('65%')).toBeTruthy();
   });
 
-  it('has a range input with min=5 and max=100', () => {
-    render(<EquityInput value={25} onChange={() => {}} />);
+  it('has a range input with min=1 and max=100', () => {
+    render(<EquityInput value={33} onChange={() => {}} />);
     const range = screen.getAllByRole('slider').find(
-      (el) => el.min === '5' && el.max === '100'
+      (el) => el.min === '1' && el.max === '100'
     );
     expect(range).toBeTruthy();
   });

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   TrendingUp, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
-  Coins, PanelLeftOpen, Menu, Sun, Moon,
+  Coins, PanelLeftOpen, Menu, Sun, Moon, Sparkles,
 } from 'lucide-react';
 import Sidebar from './components/Sidebar.jsx';
 import MobileSidebar from './components/MobileSidebar.jsx';
@@ -15,9 +15,9 @@ import { computeProjection, TOTAL_YEARS, STATUS_QUO_YEARS } from './utils/projec
 import { computeTotalTax } from './utils/tax.js';
 
 const DEFAULTS = {
-  income: 300_000, stateRate: 5, enoughNumber: 10_000,
+  income: 300_000, stateRate: 9, enoughNumber: 10_000,
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
-  capRate: 10, depreciation: 40, depDeferYears: 0, equityPct: 25,
+  capRate: 10, depreciation: 35, depDeferYears: 0, equityPct: 32,
   forcedAppreciation: 30, annualAppreciation: 10, cashflowGrowth: 3,
   showStockAlt: false, savingsRate: 20, stockReturn: 8,
 };
@@ -64,7 +64,7 @@ export default function App() {
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
-    ltv: 100, loanRate: 6.5, loanTerm: 25,
+    ltv: 100, loanRate: 6.5, loanTerm: 30,
   }), [
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
@@ -167,7 +167,7 @@ export default function App() {
                   {fmt(horizonData.totalProfits)}
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-3 max-w-xl">
-                  Equity gain + cashflow + tax savings (taken &amp; banked) — over {horizon} {horizon === 1 ? 'year' : 'years'}.
+                  Equity appreciation + principal paydown + cashflow + tax savings — over {horizon} {horizon === 1 ? 'year' : 'years'}.
                 </p>
 
                 <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -175,14 +175,20 @@ export default function App() {
                   {/* Take Action */}
                   <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 space-y-4 relative overflow-hidden">
                     <Coins className="absolute bottom-3 right-3 w-16 h-16 text-emerald-500 opacity-10 pointer-events-none" />
-                    <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400">
-                      <Trophy className="w-4 h-4" />
-                      <span className="text-xs font-bold uppercase tracking-widest">If You Take Action</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400">
+                        <Trophy className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-widest">If You Take Action</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.totalProfits)}</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">total ROI</div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <MetricTile label="Net Worth"
                         value={fmt(horizonData.equity)}
-                        sublabel={`${equityPct}% of ${fmt(horizonData.totalDealValue)}`}
+                        sublabel="From appreciation"
                         icon={Home} tone="emerald" />
                       <MetricTile label="Cashflow"
                         value={`${fmt(horizonData.monthlyCashflow)}/mo`}
@@ -198,9 +204,9 @@ export default function App() {
                               : 'Pool deployed'
                         }
                         icon={TrendingUp} tone="emerald" />
-                      <MetricTile label="Cash Deployed"
-                        value="$0"
-                        sublabel="Creative financing · no personal cash"
+                      <MetricTile label="Principal Paydown"
+                        value={fmt(horizonData.cumulativePrincipalPaydown)}
+                        sublabel="Loan amortization · your share"
                         icon={Coins} tone="emerald" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
@@ -221,7 +227,7 @@ export default function App() {
                       <ContrastBullet tone="emerald">
                         You'd gain{' '}
                         <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.equityGain)}</strong>{' '}
-                        in equity appreciation ({fmt(horizonData.equity)} total equity — {equityPct}% of {fmt(horizonData.totalDealValue)} portfolio)
+                        in equity ({equityPct}% of {fmt(horizonData.totalDealValue)} portfolio)
                       </ContrastBullet>
                       <ContrastBullet tone="emerald">
                         You'd earn{' '}
@@ -246,11 +252,17 @@ export default function App() {
                   {/* Do Nothing */}
                   <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5 space-y-4 relative overflow-hidden">
                     <Zap className="absolute bottom-3 right-3 w-16 h-16 text-red-500 opacity-10 pointer-events-none" />
-                    <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
-                      <AlertTriangle className="w-4 h-4" />
-                      <span className="text-xs font-bold uppercase tracking-widest">If You Do Nothing</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-widest">If You Do Nothing</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-black text-red-500 dark:text-red-400 tabular-nums leading-none">−{fmt(horizonData.totalProfits)}</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">opportunity cost</div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <MetricTile label="Years Working"
                         value={`${STATUS_QUO_YEARS}+`} sublabel="Trading time for money"
                         icon={Clock} tone="red" />
@@ -262,13 +274,13 @@ export default function App() {
                         sublabel={`${fmt(horizonData.yearTaxesPaid)}/yr burn`}
                         icon={Receipt} tone="red" />
                       <MetricTile label="1 Layoff Away"
-                        value="56%"
-                        sublabel="of workers fear job loss"
+                        value="91%"
+                        sublabel="lack job security (CNBC/Blind, Aug. 2022)"
                         icon={User} tone="red" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
                       <ContrastBullet tone="red">
-                        <strong className="text-red-500 dark:text-red-400">{STATUS_QUO_YEARS} more years</strong> of trading time for paychecks
+                        <strong className="text-red-500 dark:text-red-400">{STATUS_QUO_YEARS} more years</strong> of trading time for money
                       </ContrastBullet>
                       <ContrastBullet tone="red">
                         <strong className="text-red-500 dark:text-red-400">$0/mo passive</strong> — paycheck-to-paycheck, every month
@@ -283,6 +295,23 @@ export default function App() {
                   </div>
 
                 </div>
+              </div>
+            </section>
+
+            {/* Zero Cash Required callout */}
+            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] p-5 flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Sparkles className="w-5 h-5 text-sky-500" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-sky-500 dark:text-sky-400 uppercase tracking-widest mb-1">Zero Cash Required</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  This model assumes you contribute{' '}
+                  <strong className="text-sky-500 dark:text-sky-400">$0 of your own money</strong>.
+                  Instead, you redirect the taxes you're already paying into real estate equity — using your
+                  knowledge to structure deals with creative financing and capital raising. No savings required.
+                  No down payment. Just your expertise and the tax code working for you.
+                </p>
               </div>
             </section>
 
@@ -303,8 +332,8 @@ export default function App() {
               Buying years 1–{buyingYears}, hold through year {TOTAL_YEARS}.
               Year-1 deal jumps {forcedAppreciation}% (forced), then {annualAppreciation}%/yr after.
               Your equity = {equityPct}% share of total deal value. Creative financing — no personal cash.
-              Cashflow grows {cashflowGrowth}%/yr.
-              Federal tax via 2024 brackets + {stateRate}% state.
+              100% LTV at 6.5% / 30-yr amortization. Cashflow grows {cashflowGrowth}%/yr.
+              2026 federal brackets + {stateRate}% state.
               {depDeferYears > 0 && ` Depreciation deferred ${depDeferYears}y.`}
               {showStockAlt && ` Stock alt = ${savingsRate}% after-tax at ${stockReturn}%/yr.`}
             </p>

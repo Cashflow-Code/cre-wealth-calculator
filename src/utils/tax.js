@@ -1,11 +1,11 @@
-// 2024 US federal income tax brackets (single filer)
-const BRACKETS_2024 = [
-  { rate: 0.10, upTo: 11_600 },
-  { rate: 0.12, upTo: 47_150 },
-  { rate: 0.22, upTo: 100_525 },
-  { rate: 0.24, upTo: 191_950 },
-  { rate: 0.32, upTo: 243_725 },
-  { rate: 0.35, upTo: 609_350 },
+// 2026 US federal income tax brackets (single filer, TCJA extended + inflation adj.)
+const BRACKETS_2026 = [
+  { rate: 0.10, upTo: 12_200 },
+  { rate: 0.12, upTo: 49_750 },
+  { rate: 0.22, upTo: 106_150 },
+  { rate: 0.24, upTo: 202_800 },
+  { rate: 0.32, upTo: 257_400 },
+  { rate: 0.35, upTo: 643_700 },
   { rate: 0.37, upTo: Infinity },
 ];
 
@@ -13,7 +13,7 @@ export function computeFederalTax(income) {
   if (income <= 0) return 0;
   let tax = 0;
   let prev = 0;
-  for (const { rate, upTo } of BRACKETS_2024) {
+  for (const { rate, upTo } of BRACKETS_2026) {
     const chunk = Math.min(income, upTo) - prev;
     if (chunk <= 0) break;
     tax += chunk * rate;
@@ -24,7 +24,7 @@ export function computeFederalTax(income) {
 
 export function marginalRate(income) {
   if (income <= 0) return 0;
-  for (const { rate, upTo } of BRACKETS_2024) {
+  for (const { rate, upTo } of BRACKETS_2026) {
     if (income <= upTo) return rate;
   }
   return 0.37;

@@ -8,10 +8,17 @@ import { TOTAL_YEARS } from '../utils/projection.js';
 import { effectiveRate } from '../utils/tax.js';
 
 const STATE_PRESETS = [
-  { label: 'No Tax', value: 0, hint: 'FL, TX, WY' },
-  { label: 'Low',    value: 3, hint: 'CO, UT' },
-  { label: 'Mid',    value: 5, hint: 'GA, VA' },
-  { label: 'High',   value: 9, hint: 'CA, NY' },
+  { label: '0% FL', value: 0, hint: 'FL, TX, WY — No income tax' },
+  { label: '3% CO', value: 3, hint: 'CO, UT — Low tax states' },
+  { label: '5% GA', value: 5, hint: 'GA, VA — Mid tax states' },
+  { label: '9% CA', value: 9, hint: 'CA, NY — High tax states' },
+];
+
+const ENOUGH_PRESETS = [
+  { label: '$10K', value: 10_000 },
+  { label: '$15K', value: 15_000 },
+  { label: '$20K', value: 20_000 },
+  { label: '$30K', value: 30_000 },
 ];
 
 function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:text-emerald-400' }) {
@@ -76,28 +83,44 @@ export default function SidebarContent({
         </div>
 
         {/* State tax presets */}
-        <div className="space-y-1.5">
-          <div className="flex gap-1.5 flex-wrap">
-            {STATE_PRESETS.map(({ label, value, hint }) => (
-              <button
-                key={value}
-                onClick={() => setStateRate(value)}
-                title={hint}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors ${
-                  stateRate === value
-                    ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
-                    : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
-                }`}
-              >
-                {label} {value}%
-              </button>
-            ))}
-          </div>
+        <div className="grid grid-cols-4 gap-1">
+          {STATE_PRESETS.map(({ label, value, hint }) => (
+            <button
+              key={value}
+              onClick={() => setStateRate(value)}
+              title={hint}
+              className={`py-1 rounded-lg text-[10px] font-bold transition-colors whitespace-nowrap ${
+                stateRate === value
+                  ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
+                  : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         <Slider label="State Tax Rate" value={stateRate} onChange={setStateRate}
           min={0} max={15} step={0.5} format={(v) => `${v}%`}
-          sublabel="Added on top of 2024 federal brackets" />
+          sublabel="Added on top of 2026 federal brackets" />
+
+        {/* Enough number presets */}
+        <div className="grid grid-cols-4 gap-1">
+          {ENOUGH_PRESETS.map(({ label, value }) => (
+            <button
+              key={value}
+              onClick={() => setEnoughNumber(value)}
+              className={`py-1 rounded-lg text-[10px] font-bold transition-colors ${
+                enoughNumber === value
+                  ? 'bg-emerald-500 text-slate-950 shadow-sm shadow-emerald-500/20'
+                  : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <Slider label="Enough Number / mo" value={enoughNumber} onChange={setEnoughNumber}
           min={2000} max={50000} step={1000}
           format={(v) => `$${(v / 1000).toFixed(0)}K`}

@@ -60,22 +60,23 @@ export function computeProjection({
     properties: 0, cumulativeTaxesPaid: 0, yearTaxesPaid: 0,
     investorWealth: 0, doNothingPosition: 0,
     depPool: 0, bankedFutureTax: 0, totalProfits: 0,
-    equityGain: 0,
+    equityGain: 0, cumulativePrincipalPaydown: 0, yearPrincipalPaydown: 0,
     stockBalance: 0, totalLoanBalance: 0,
     annualDebtService: 0, capitalDeployed: 0,
     isBuyingPhase: true, depEligible: depDeferYears === 0,
   }];
 
-  let totalDealMonthlyCashflow = 0;
-  let totalDealAssetValue      = 0;
-  let cumulativeProperties     = 0;
-  let cumulativeCashflow       = 0;
-  let cumulativeTaxSavings     = 0;
-  let depPool                  = 0;
-  let cumulativeTaxesPaid      = 0;
-  let stockBalance             = 0;
-  let capitalDeployed          = 0;
-  const loanCohorts            = [];
+  let totalDealMonthlyCashflow    = 0;
+  let totalDealAssetValue         = 0;
+  let cumulativeProperties        = 0;
+  let cumulativeCashflow          = 0;
+  let cumulativeTaxSavings        = 0;
+  let depPool                     = 0;
+  let cumulativeTaxesPaid         = 0;
+  let stockBalance                = 0;
+  let capitalDeployed             = 0;
+  let cumulativePrincipalPaydown  = 0;
+  const loanCohorts               = [];
 
   for (let year = 1; year <= TOTAL_YEARS; year++) {
     stockBalance             = (stockBalance + annualStockSavings) * (1 + stockGrowthRate);
@@ -116,6 +117,20 @@ export function computeProjection({
         );
       }
     }
+
+    // Principal paid down this year across all active cohorts
+    let yearPrincipalPaydown = 0;
+    for (const cohort of loanCohorts) {
+      const age = year - cohort.originYear;
+      if (age > 0 && age <= loanTerm) {
+        yearPrincipalPaydown += (
+          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age - 1) -
+          loanRemainingBalance(cohort.principal, loanRateDecimal, loanTerm, age)
+        );
+      }
+    }
+    yearPrincipalPaydown     = Math.max(0, yearPrincipalPaydown) * equityRate;
+    cumulativePrincipalPaydown += yearPrincipalPaydown;
 
     // Equity (net of loan balance) and cashflow (net of debt service)
     const yourEquity           = Math.max(0, (totalDealAssetValue - totalLoanBalance) * equityRate);
@@ -173,6 +188,8 @@ export function computeProjection({
       bankedFutureTax,
       totalProfits,
       equityGain,
+      cumulativePrincipalPaydown,
+      yearPrincipalPaydown,
       stockBalance,
       totalLoanBalance,
       annualDebtService:   totalAnnualDebtService * equityRate,

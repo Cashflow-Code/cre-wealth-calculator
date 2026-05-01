@@ -1,16 +1,16 @@
 import React from 'react';
 
 const LEVERAGE_PRESETS = [
-  { pct: 10,  label: 'reputation', desc: 'You lend your name and reputation; partners bring capital and execute' },
-  { pct: 25,  label: 'knowledge',  desc: 'You structure the deal; partners bring capital and execute' },
-  { pct: 50,  label: 'capital',    desc: 'You co-invest meaningfully for bigger upside' },
-  { pct: 100, label: 'solo',       desc: 'Full ownership — you do everything yourself' },
+  { pct: 3,   label: 'finder',   desc: 'You find and bring the deal; partners fund and execute' },
+  { pct: 33,  label: 'partner',  desc: 'Standard JV split; you source and manage, partners fund' },
+  { pct: 50,  label: 'co-own',   desc: 'Equal partnership; you and partner share value equally' },
+  { pct: 100, label: 'solo',     desc: 'Full ownership — you source, fund, and operate everything' },
 ];
 
 export default function EquityInput({ value, onChange }) {
   const matched = LEVERAGE_PRESETS.find((p) => p.pct === value);
   const desc = matched
-    ? `Use this for ${matched.label} leverage — ${matched.desc}`
+    ? `Use this for ${matched.label} deals — ${matched.desc}`
     : 'Custom equity position · No capital required at Y0';
 
   return (
@@ -41,9 +41,9 @@ export default function EquityInput({ value, onChange }) {
         type="range"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        min={5}
+        min={1}
         max={100}
-        step={5}
+        step={1}
         className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
       />
       {/* Fixed height prevents sidebar from resizing when description text changes length */}

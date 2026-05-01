@@ -17,13 +17,13 @@ describe('computeFederalTax', () => {
   });
 
   it('10% bracket only', () => {
-    // $10,000: 10% on all
+    // $10,000 is fully within 10% bracket ($0–$12,200)
     expect(computeFederalTax(10_000)).toBeCloseTo(1_000);
   });
 
   it('crosses 10% into 12% bracket', () => {
-    // $11,600 @ 10% = $1,160; $400 @ 12% = $48 → $1,208
-    expect(computeFederalTax(12_000)).toBeCloseTo(1_208);
+    // 2026: 10% on first $12,200 = $1,220; 12% on remaining $800 = $96 → $1,316
+    expect(computeFederalTax(13_000)).toBeCloseTo(1_316);
   });
 
   it('$300K uses five brackets and is less than 37% flat', () => {
@@ -47,7 +47,7 @@ describe('marginalRate', () => {
     expect(marginalRate(80_000)).toBe(0.22);
   });
 
-  it('returns 0.37 for income above $609K', () => {
+  it('returns 0.37 for income above top bracket', () => {
     expect(marginalRate(700_000)).toBe(0.37);
   });
 
