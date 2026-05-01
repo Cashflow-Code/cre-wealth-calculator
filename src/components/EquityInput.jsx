@@ -3,7 +3,7 @@ import React from 'react';
 const LEVERAGE_PRESETS = [
   { pct: 33,  label: 'knowledge', desc: "Standard split — you bring know-how and connections, leverage other people's money" },
   { pct: 50,  label: 'capital',   desc: 'Equal partnership; you and partner share value equally' },
-  { pct: 100, label: 'solo',      desc: 'Full ownership — you source, fund, and operate everything' },
+  { pct: 100, label: 'systems',   desc: 'Full control — you own the deal and run it through your own systems and team' },
 ];
 
 export default function EquityInput({ value, onChange }) {

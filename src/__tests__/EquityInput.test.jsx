@@ -6,7 +6,7 @@ import EquityInput from '../components/EquityInput.jsx';
 describe('EquityInput', () => {
   it('renders label text for all three presets', () => {
     render(<EquityInput value={33} onChange={() => {}} />);
-    ['knowledge', 'capital', 'solo'].forEach((label) => {
+    ['knowledge', 'capital', 'systems'].forEach((label) => {
       expect(screen.getByText(label)).toBeTruthy();
     });
   });
@@ -25,10 +25,10 @@ describe('EquityInput', () => {
     expect(onChange).toHaveBeenCalledWith(50);
   });
 
-  it('fires onChange(100) when solo preset is clicked', () => {
+  it('fires onChange(100) when systems preset is clicked', () => {
     const onChange = vi.fn();
     render(<EquityInput value={33} onChange={onChange} />);
-    fireEvent.click(screen.getByText('solo').closest('button'));
+    fireEvent.click(screen.getByText('systems').closest('button'));
     expect(onChange).toHaveBeenCalledWith(100);
   });
 
@@ -37,9 +37,9 @@ describe('EquityInput', () => {
     expect(screen.getByText(/know-how/i)).toBeTruthy();
   });
 
-  it('shows solo description when value is 100', () => {
+  it('shows systems description when value is 100', () => {
     render(<EquityInput value={100} onChange={() => {}} />);
-    expect(screen.getByText(/Full ownership/i)).toBeTruthy();
+    expect(screen.getByText(/Full control/i)).toBeTruthy();
   });
 
   it('shows custom description for non-preset values', () => {
