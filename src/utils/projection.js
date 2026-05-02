@@ -191,6 +191,7 @@ export function computeProjection({
   }
 
   // Freedom calculation — scan actual model data for first year cashflow >= enoughNumber
+  // Round to nearest $100 to avoid near-miss artifacts (e.g. $9,956 vs $10,000 target)
   const grossMonthlyPerProp    = propertyValue * capRateDecimal / 12;
   const loanPerPropMonthly     = ltvDecimal > 0
     ? annualLoanPayment(propertyValue * ltvDecimal, loanRateDecimal, loanTerm) / 12
@@ -199,7 +200,7 @@ export function computeProjection({
 
   let yearsToReach = Infinity;
   for (let y = 1; y <= TOTAL_YEARS; y++) {
-    if (data[y] && data[y].monthlyCashflow >= enoughNumber) { yearsToReach = y; break; }
+    if (data[y] && Math.round(data[y].monthlyCashflow / 100) * 100 >= enoughNumber) { yearsToReach = y; break; }
   }
   const isReachable       = Number.isFinite(yearsToReach);
   const cashflowAtFreedom = isReachable ? data[yearsToReach].monthlyCashflow : 0;

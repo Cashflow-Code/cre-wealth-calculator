@@ -41,7 +41,7 @@ export default function App() {
   const [showStockAlt, setShowStockAlt]             = useState(DEFAULTS.showStockAlt);
   const [savingsRate, setSavingsRate]               = useState(DEFAULTS.savingsRate);
   const [stockReturn, setStockReturn]               = useState(DEFAULTS.stockReturn);
-  const [horizon, setHorizon]                       = useState(1);
+  const [horizon, setHorizon]                       = useState(3);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
   const [isDark, setIsDark]                         = useState(false);
@@ -224,8 +224,7 @@ export default function App() {
                     >
                       {fmt(horizonData.totalProfits)}
                     </div>
-                    <div className="w-12 h-0.5 bg-amber-500/60 mt-3 mb-2" />
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mt-3 text-center">
                       from the 5 wealth engines
                     </p>
                   </div>
@@ -241,13 +240,13 @@ export default function App() {
                     <div className="flex items-start gap-2.5">
                       <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                        <strong className="text-amber-500 dark:text-amber-400">Tax Benefits</strong> — cost segregation turns your W2 tax bill into real estate equity &amp; cashflow
+                        <strong className="text-amber-500 dark:text-amber-400">Tax Benefits</strong> — cost segregation turns W2 taxes into equity &amp; cashflow
                       </p>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                        <strong className="text-amber-500 dark:text-amber-400">Appreciation</strong> — forced appreciation and market growth preserves and grows your capital
+                        <strong className="text-amber-500 dark:text-amber-400">Appreciation</strong> — forced + market appreciation compounds your capital
                       </p>
                     </div>
                     <div className="flex items-start gap-2.5">
@@ -283,7 +282,7 @@ export default function App() {
                     <div className="grid grid-cols-2 gap-2">
                       <MetricTile label="Net Worth"
                         value={fmt(horizonData.equity)}
-                        sublabel={`Net equity · ${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio`}
+                        sublabel="Net equity position"
                         icon={Home} tone="emerald" />
                       <MetricTile label="Cashflow"
                         value={`${fmt(horizonData.monthlyCashflow)}/mo`}
@@ -322,7 +321,7 @@ export default function App() {
                       <ContrastBullet tone="emerald">
                         You'd gain{' '}
                         <strong className="text-emerald-500 dark:text-emerald-400">{fmt(horizonData.equityGain)}</strong>{' '}
-                        in equity ({equityPct}% of {fmt(horizonData.totalDealValue)} portfolio)
+                        in equity appreciation
                       </ContrastBullet>
                       <ContrastBullet tone="emerald">
                         You'd earn{' '}
@@ -573,7 +572,7 @@ export default function App() {
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
                   <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">in the stock market · Y{TOTAL_YEARS}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">in the stock market by Y{TOTAL_YEARS}</div>
                 </div>
                 <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
                   <p className="text-base font-black text-sky-500 dark:text-sky-400 tracking-tight">Well, you can do both.</p>
