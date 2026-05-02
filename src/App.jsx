@@ -116,7 +116,7 @@ export default function App() {
       const maxBorrow = Math.max(0,
         (0.70 * d.totalDealValue - d.totalLoanBalance) * equityRate - cumulativeRefiDebt
       );
-      if (maxBorrow <= 0) break;
+      if (maxBorrow <= 0) continue;
       cumulativeRefiDebt += maxBorrow;
       deployments.push({ year: y, amount: maxBorrow });
     }
@@ -342,7 +342,7 @@ export default function App() {
                         <ContrastBullet tone="emerald">
                           You'd be free in{' '}
                           <strong className="text-emerald-500 dark:text-emerald-400">
-                            {projection.yearsToReach} {projection.yearsToReach === 1 ? 'year' : 'years'}
+                            {projection.yearsToReach}–{projection.yearsToReach + 1} years
                           </strong>
                           {' '}— <strong>{projection.propsNeeded} properties</strong> at{' '}
                           <strong>{fmt(projection.cashflowAtFreedom)}/mo</strong>

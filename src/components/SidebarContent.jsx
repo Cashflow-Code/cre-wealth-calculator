@@ -38,7 +38,9 @@ function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:t
 
 function Slider({ label, value, onChange, min, max, step, format, sublabel, disabled, tone = 'emerald' }) {
   const valueClass = tone === 'sky' ? 'text-sky-500 dark:text-sky-400' : 'text-emerald-500 dark:text-emerald-400';
-  const accentClass = tone === 'sky' ? 'accent-sky-500' : 'accent-emerald-500';
+  const thumbColor = tone === 'sky'
+    ? '[&::-webkit-slider-thumb]:bg-sky-500 [&::-moz-range-thumb]:bg-sky-500'
+    : '[&::-webkit-slider-thumb]:bg-emerald-500 [&::-moz-range-thumb]:bg-emerald-500';
   return (
     <div className={`space-y-1.5 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
       <div className="flex items-baseline justify-between gap-2">
@@ -50,7 +52,7 @@ function Slider({ label, value, onChange, min, max, step, format, sublabel, disa
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         min={min} max={max} step={step} disabled={disabled}
-        className={`w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed ${accentClass}`}
+        className={`w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full ${thumbColor}`}
       />
       {sublabel && <p className="text-[10px] text-slate-500 leading-tight">{sublabel}</p>}
     </div>
