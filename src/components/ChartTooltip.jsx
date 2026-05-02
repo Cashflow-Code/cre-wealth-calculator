@@ -6,7 +6,7 @@ export default function ChartTooltip({ active, payload, showStockAlt }) {
   if (!active || !payload || !payload.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-white/95 dark:bg-[#0d1630]/95 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3 shadow-2xl backdrop-blur-sm min-w-[260px]">
+    <div className="bg-white/95 dark:bg-[#0d1630]/95 border border-slate-200 dark:border-slate-700/60 rounded-xl p-3 shadow-2xl backdrop-blur-sm min-w-[200px] sm:min-w-[260px]">
       <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
         Year {d.yearNum}{' '}
         {d.isBuyingPhase

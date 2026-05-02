@@ -11,6 +11,7 @@ import WealthChart from './components/WealthChart.jsx';
 import CashflowChart from './components/CashflowChart.jsx';
 import MetricTile from './components/MetricTile.jsx';
 import ContrastBullet from './components/ContrastBullet.jsx';
+import SimpleCalculator from './components/SimpleCalculator.jsx';
 import Logo from './components/Logo.jsx';
 import { fmt } from './utils/fmt.js';
 import { computeProjection, TOTAL_YEARS, STATUS_QUO_YEARS } from './utils/projection.js';
@@ -159,7 +160,7 @@ export default function App() {
       <div className="relative max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* Header */}
-        <header className="flex items-center justify-between mb-8 flex-wrap gap-3">
+        <header className="flex items-center justify-between mb-6 sm:mb-8 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             {/* Mobile menu toggle */}
             <button
@@ -224,7 +225,20 @@ export default function App() {
           </div>
         </header>
 
-        <div className="flex gap-8">
+        {isSimple ? (
+          <SimpleCalculator
+            projection={projection}
+            income={income}
+            setIncome={setIncome}
+            enoughNumber={enoughNumber}
+            setEnoughNumber={setEnoughNumber}
+            isDark={isDark}
+            totalYears={TOTAL_YEARS}
+            buyingYears={buyingYears}
+          />
+        ) : (
+
+        <div className="flex gap-4 md:gap-6 lg:gap-8">
           {/* Desktop sidebar */}
           {sidebarOpen && (
             <Sidebar {...sharedSidebarProps} onClose={() => setSidebarOpen(false)} />
@@ -234,7 +248,7 @@ export default function App() {
           <main className="flex-1 min-w-0 space-y-6">
 
             {/* Hero */}
-            <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-amber-500/[0.07] dark:via-[#0d1630] dark:to-red-500/[0.05] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
+            <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-amber-500/[0.07] dark:via-[#0d1630] dark:to-red-500/[0.05] p-4 sm:p-6 lg:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
               <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="relative">
                 <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-0 mb-8">
@@ -294,9 +308,9 @@ export default function App() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                   {/* Take Action */}
-                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 space-y-4 relative overflow-hidden">
+                  <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 sm:p-5 space-y-4 relative overflow-hidden">
                     <Coins className="absolute bottom-3 right-3 w-16 h-16 text-emerald-500 opacity-10 pointer-events-none" />
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-y-2">
                       <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400">
                         <Trophy className="w-4 h-4" />
                         <span className="text-sm font-bold uppercase tracking-widest">If You Take Action</span>
@@ -378,9 +392,9 @@ export default function App() {
                   </div>
 
                   {/* Do Nothing */}
-                  <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-5 space-y-4 relative overflow-hidden">
+                  <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] p-4 sm:p-5 space-y-4 relative overflow-hidden">
                     <Zap className="absolute bottom-3 right-3 w-16 h-16 text-red-500 opacity-10 pointer-events-none" />
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-y-2">
                       <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
                         <AlertTriangle className="w-4 h-4" />
                         <span className="text-sm font-bold uppercase tracking-widest">If You Do Nothing</span>
@@ -428,17 +442,17 @@ export default function App() {
 
             {/* Zero Cash Required callout */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
-              <div className="px-6 pt-5 pb-2">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
               </div>
-              <div className="flex items-stretch gap-0 px-6 pb-6">
+              <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-6 pb-4 sm:pb-6">
                 {/* Big $0 */}
-                <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[120px]">
+                <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-6 sm:border-r border-sky-500/20 sm:min-w-[120px]">
                   <div className="text-7xl sm:text-8xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">$0</div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2">of your money</div>
                 </div>
                 {/* Bullet explanation */}
-                <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
+                <div className="flex-1 sm:pl-6 space-y-3 flex flex-col justify-center">
                   <div className="flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
@@ -487,13 +501,13 @@ export default function App() {
 
             {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
-              <div className="px-6 pt-5 pb-3">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
                 <p className="text-sm font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Other Optimizations You Can Perform</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                   These compound on top of your base scenario. All estimates use the settings above.
                 </p>
               </div>
-              <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                 {/* Refi Cycle */}
                 <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] overflow-hidden">
@@ -510,12 +524,12 @@ export default function App() {
                       onChange={e => setRefiInterval(Number(e.target.value))}
                       className="w-full h-1 accent-violet-500" />
                   </div>
-                  <div className="flex items-stretch gap-0 px-5 py-5">
-                    <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
+                  <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-5 py-4 sm:py-5">
+                    <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-5 sm:border-r border-violet-500/20 sm:min-w-[120px]">
                       <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(refiCalc.wealthY20, 1)}</div>
                       <div className="text-[10px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60 mt-2">extra wealth by Y{TOTAL_YEARS}</div>
                     </div>
-                    <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
+                    <div className="flex-1 sm:pl-5 space-y-2.5 flex flex-col justify-center">
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
@@ -566,12 +580,12 @@ export default function App() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-stretch gap-0 px-5 py-5">
-                    <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
+                  <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-5 py-4 sm:py-5">
+                    <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-5 sm:border-r border-violet-500/20 sm:min-w-[120px]">
                       <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(reinvestCalc.wealthY20, 1)}</div>
                       <div className="text-[10px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60 mt-2">extra wealth by Y{TOTAL_YEARS}</div>
                     </div>
-                    <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
+                    <div className="flex-1 sm:pl-5 space-y-2.5 flex flex-col justify-center">
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
@@ -601,15 +615,15 @@ export default function App() {
 
             {/* But Isn't Stock Investing More Passive? */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
-              <div className="px-6 pt-5 pb-2">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
               </div>
-              <div className="flex items-stretch gap-0 px-6 pb-6">
-                <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
+              <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-6 sm:border-r border-sky-500/20 sm:min-w-[150px]">
                   <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">in the stock market by Y{TOTAL_YEARS}</div>
                 </div>
-                <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
+                <div className="flex-1 sm:pl-6 space-y-3 flex flex-col justify-center">
                   <p className="text-base font-black text-sky-500 dark:text-sky-400 tracking-tight">Well, you can do both.</p>
                   <div className="flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
@@ -635,6 +649,8 @@ export default function App() {
 
           </main>
         </div>
+
+        )} {/* end isSimple conditional */}
 
         {/* Desktop sidebar re-open toggle */}
         {!sidebarOpen && (

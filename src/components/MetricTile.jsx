@@ -8,7 +8,7 @@ const TONES = {
 export default function MetricTile({ label, value, sublabel, icon: Icon, tone }) {
   const t = TONES[tone];
   return (
-    <div className={`rounded-xl border ${t.border} ${t.bg} p-3`}>
+    <div className={`rounded-xl border ${t.border} ${t.bg} p-2.5 sm:p-3`}>
       <div className="flex items-center gap-1.5 mb-1.5">
         {Icon && <Icon className={`w-3.5 h-3.5 ${t.icon}`} />}
         <span className="text-[9px] font-bold uppercase tracking-wider text-slate-500 truncate">{label}</span>

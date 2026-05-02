@@ -54,8 +54,8 @@ export default function CashflowChart({
   }));
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 p-5 shadow-xl">
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 p-4 sm:p-5 shadow-xl">
+      <div className="flex items-center justify-between mb-4 sm:mb-5 flex-wrap gap-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">Cashflow Trajectory</h3>
           <p className="text-[11px] text-slate-500 mt-0.5">Passive income per month · {totalYears}-year comparison</p>
@@ -66,33 +66,35 @@ export default function CashflowChart({
           <LegendDot color="#94a3b8" label="Do Nothing ($0)" />
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="year" stroke={axisColor} fontSize={11} interval={0} />
-          <YAxis
-            tickFormatter={(v) => `${fmt(v)}/mo`}
-            stroke={axisColor} fontSize={11} width={84}
-          />
-          <Tooltip content={<CashflowTooltip />} />
-          <ReferenceLine y={0} stroke="#334155" strokeWidth={1}
-            label={{ value: 'Do Nothing · $0', fill: axisColor, fontSize: 9, position: 'insideBottomLeft' }} />
-          <ReferenceLine y={enoughNumber} stroke="#10b981" strokeDasharray="4 4"
-            label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top' }} />
-          {buyingYears && (
-            <ReferenceLine
-              x={`Y${buyingYears}`}
-              stroke="#f59e0b" strokeDasharray="4 4"
-              label={{ value: 'Buying ends', fill: '#f59e0b', fontSize: 10, position: 'top', dy: -5 }}
+      <div className="h-[200px] sm:h-[260px] lg:h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <XAxis dataKey="year" stroke={axisColor} fontSize={11} interval={1} />
+            <YAxis
+              tickFormatter={(v) => `${fmt(v)}/mo`}
+              stroke={axisColor} fontSize={11} width={84}
             />
-          )}
-          <Line type="monotone" dataKey="creCashflow" stroke="#10b981" strokeWidth={2.5}
-            dot={{ fill: '#10b981', r: 2.5, strokeWidth: 0 }} activeDot={{ r: 5 }} />
-          <Line type="monotone" dataKey="stockCashflow" stroke="#0ea5e9" strokeWidth={2}
-            strokeDasharray="6 4"
-            dot={{ fill: '#0ea5e9', r: 2, strokeWidth: 0 }} activeDot={{ r: 4.5 }} />
-        </ComposedChart>
-      </ResponsiveContainer>
+            <Tooltip content={<CashflowTooltip />} />
+            <ReferenceLine y={0} stroke="#334155" strokeWidth={1}
+              label={{ value: 'Do Nothing · $0', fill: axisColor, fontSize: 9, position: 'insideBottomLeft' }} />
+            <ReferenceLine y={enoughNumber} stroke="#10b981" strokeDasharray="4 4"
+              label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top' }} />
+            {buyingYears && (
+              <ReferenceLine
+                x={`Y${buyingYears}`}
+                stroke="#f59e0b" strokeDasharray="4 4"
+                label={{ value: 'Buying ends', fill: '#f59e0b', fontSize: 10, position: 'top', dy: -5 }}
+              />
+            )}
+            <Line type="monotone" dataKey="creCashflow" stroke="#10b981" strokeWidth={2.5}
+              dot={{ fill: '#10b981', r: 2.5, strokeWidth: 0 }} activeDot={{ r: 5 }} />
+            <Line type="monotone" dataKey="stockCashflow" stroke="#0ea5e9" strokeWidth={2}
+              strokeDasharray="6 4"
+              dot={{ fill: '#0ea5e9', r: 2, strokeWidth: 0 }} activeDot={{ r: 4.5 }} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
