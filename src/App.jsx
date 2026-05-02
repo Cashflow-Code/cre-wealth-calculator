@@ -17,10 +17,10 @@ import { computeTotalTax } from './utils/tax.js';
 
 const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
-  propertyValue: 3_000_000, propertiesPerYear: 4, buyingYears: 5,
-  capRate: 8, depreciation: 35, depDeferYears: 0, equityPct: 25,
+  propertyValue: 2_500_000, propertiesPerYear: 3, buyingYears: 5,
+  capRate: 8, depreciation: 35, depDeferYears: 0, equityPct: 33,
   forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 2,
-  showStockAlt: true, savingsRate: 20, stockReturn: 8,
+  savingsRate: 20, stockReturn: 8,
   ltv: 70, loanRate: 6, pilotYearProperties: 2,
 };
 
@@ -38,7 +38,6 @@ export default function App() {
   const [forcedAppreciation, setForcedAppreciation] = useState(DEFAULTS.forcedAppreciation);
   const [annualAppreciation, setAnnualAppreciation] = useState(DEFAULTS.annualAppreciation);
   const [cashflowGrowth, setCashflowGrowth]         = useState(DEFAULTS.cashflowGrowth);
-  const [showStockAlt, setShowStockAlt]               = useState(DEFAULTS.showStockAlt);
   const [savingsRate, setSavingsRate]                 = useState(DEFAULTS.savingsRate);
   const [stockReturn, setStockReturn]                 = useState(DEFAULTS.stockReturn);
   const [ltv, setLtv]                                 = useState(DEFAULTS.ltv);
@@ -64,7 +63,7 @@ export default function App() {
     setDepDeferYears(DEFAULTS.depDeferYears);         setEquityPct(DEFAULTS.equityPct);
     setForcedAppreciation(DEFAULTS.forcedAppreciation);
     setAnnualAppreciation(DEFAULTS.annualAppreciation);
-    setCashflowGrowth(DEFAULTS.cashflowGrowth);       setShowStockAlt(DEFAULTS.showStockAlt);
+    setCashflowGrowth(DEFAULTS.cashflowGrowth);
     setSavingsRate(DEFAULTS.savingsRate);             setStockReturn(DEFAULTS.stockReturn);
     setLtv(DEFAULTS.ltv);                             setLoanRate(DEFAULTS.loanRate);
     setPilotYearProperties(DEFAULTS.pilotYearProperties);
@@ -146,7 +145,7 @@ export default function App() {
     forcedAppreciation, setForcedAppreciation,
     annualAppreciation, setAnnualAppreciation,
     cashflowGrowth, setCashflowGrowth,
-    showStockAlt, setShowStockAlt, savingsRate, setSavingsRate, stockReturn, setStockReturn,
+    savingsRate, setSavingsRate, stockReturn, setStockReturn,
     ltv, setLtv, loanRate, setLoanRate, pilotYearProperties, setPilotYearProperties,
     annualStockDeposit, totalStockInvested,
     finalStockBalance,
@@ -180,6 +179,24 @@ export default function App() {
             <Logo />
           </div>
           <div className="flex items-center gap-2 justify-center sm:justify-end flex-wrap">
+            {/* Year picker - Advanced only (Simple has its own internal picker) */}
+            {!isSimple && (
+              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
+                {[1, 3, 5].map((y) => (
+                  <button
+                    key={y}
+                    onClick={() => setHorizon(y)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      horizon === y
+                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    {y}Y
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Simple/Advanced toggle */}
             <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
               <button
@@ -213,24 +230,6 @@ export default function App() {
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
-            {/* Year picker - Advanced only (Simple has its own internal picker) */}
-            {!isSimple && (
-              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
-                {[1, 3, 5].map((y) => (
-                  <button
-                    key={y}
-                    onClick={() => setHorizon(y)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      horizon === y
-                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                    }`}
-                  >
-                    {y}Y
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </header>
 
@@ -315,7 +314,7 @@ export default function App() {
                     <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsLabel}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">years,</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">by acquiring</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.minPropsNeeded}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">with</span>
@@ -363,34 +362,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* How much capital do I need? */}
-            <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] overflow-hidden">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400">How much capital do I need?</p>
-              </div>
-
-              {/* Hero answer */}
-              <div className="px-4 sm:px-6 pb-4">
-                <p className="text-5xl sm:text-6xl font-black text-amber-500 dark:text-amber-400 leading-none tabular-nums">$0</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">of your own capital is required to get started</p>
-              </div>
-
-              {/* Three engines (supporting evidence) */}
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
-                  { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
-                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'can cover up to 100% of the acquisition' },
-                ].map(({ label, value, sub }) => (
-                  <div key={label} className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-1.5">{label}</p>
-                    <p className="text-base sm:text-lg font-black tabular-nums text-amber-500 dark:text-amber-400">{value}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             {/* Chart */}
             <WealthChart
               data={projection.data}
@@ -399,7 +370,7 @@ export default function App() {
               isReachable={projection.isReachable}
               yearsToReach={projection.yearsToReach}
               totalYears={TOTAL_YEARS}
-              showStockAlt={isSimple || showStockAlt}
+              showStockAlt={true}
               enoughNumber={enoughNumber}
               isDark={isDark}
             />
@@ -414,6 +385,43 @@ export default function App() {
               buyingYears={buyingYears}
               isDark={isDark}
             />
+
+            {/* How much capital do I need? */}
+            <section className="rounded-2xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-[#0c1428] dark:to-slate-400/[0.04] relative overflow-hidden shadow-2xl shadow-slate-900/10">
+              <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-slate-300/15 dark:bg-slate-400/[0.06] blur-3xl" />
+              <div className="relative p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-6">
+
+                  {/* Left: title + hero number */}
+                  <div className="flex-shrink-0 lg:w-72">
+                    <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-3">How much capital do I need?</p>
+                    <p
+                      className="text-5xl sm:text-6xl font-black text-slate-800 dark:text-slate-100 leading-none tabular-nums"
+                      style={{ textShadow: '0 0 60px rgba(148,163,184,0.45)' }}
+                    >$0</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">of your own capital is required to get started</p>
+                  </div>
+
+                  {/* Vertical divider — slate hint */}
+                  <div className="hidden lg:block self-stretch w-px bg-gradient-to-b from-transparent via-slate-300/60 dark:via-slate-600/40 to-transparent" />
+
+                  {/* Right: 3 supporting boxes */}
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {[
+                      { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead',     valueClass: 'text-2xl sm:text-3xl tabular-nums' },
+                      { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time',     valueClass: 'text-2xl sm:text-3xl tabular-nums' },
+                      { label: 'Scale Without Your Capital', value: 'Creative Financing',                        sub: 'can cover up to 100% of the acquisition', valueClass: 'text-lg sm:text-xl' },
+                    ].map(({ label, value, sub, valueClass }) => (
+                      <div key={label} className="flex flex-col rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-white/60 dark:bg-slate-500/[0.06] px-4 py-4">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-2">{label}</p>
+                        <p className={`flex-1 flex items-center font-black leading-tight text-slate-800 dark:text-slate-100 ${valueClass}`}>{value}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 pt-2 leading-snug">{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
@@ -540,15 +548,17 @@ export default function App() {
             </section>
 
             {/* But Isn't Stock Investing More Passive? */}
-            <section className="rounded-2xl border border-slate-200/80 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 overflow-hidden">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">But isn't stock investing more passive?</p>
-                <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">It's actually better to do both.</p>
-              </div>
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+            <section className="rounded-2xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-[#0c1428] dark:to-slate-400/[0.04] relative overflow-hidden shadow-2xl shadow-slate-900/10">
+              <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-slate-300/15 dark:bg-slate-400/[0.06] blur-3xl" />
+              <div className="relative">
+                <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
+                  <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">But isn't stock investing more passive?</p>
+                  <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">It's actually better to do both.</p>
+                </div>
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
 
-                {/* 3-cell comparison: Stocks + CRE = Combined */}
-                <div className="rounded-xl border border-slate-200/80 dark:border-slate-700/40 bg-white/60 dark:bg-[#0c1428]/60 overflow-hidden">
+                  {/* 3-cell comparison: Stocks + CRE = Combined */}
+                  <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-white/60 dark:bg-slate-500/[0.06] overflow-hidden">
                   <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
                     <div className="p-4">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
@@ -597,6 +607,7 @@ export default function App() {
                   </div>
                 </div>
 
+                </div>
               </div>
             </section>
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import { User, Building2, TrendingUp, BarChart3, RotateCcw } from 'lucide-react';
+import { User, Building2, TrendingUp, BarChart3, ChevronDown } from 'lucide-react';
 import EquityInput from './EquityInput.jsx';
-import Switch from './Switch.jsx';
 import { fmt } from '../utils/fmt.js';
 import { TOTAL_YEARS } from '../utils/projection.js';
 import { effectiveRate } from '../utils/tax.js';
@@ -27,12 +26,13 @@ const presetButtonClass = (active) =>
       : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200'
   }`;
 
-function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:text-emerald-400' }) {
+function DisclosureSummary({ icon: Icon, label, iconColor = 'text-slate-400' }) {
   return (
-    <div className="flex items-center gap-2">
-      <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
+    <summary className="flex items-center gap-2 cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden">
+      {Icon && <Icon className={`w-3.5 h-3.5 ${iconColor}`} />}
       <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</span>
-    </div>
+      <ChevronDown className="w-3 h-3 text-slate-400 ml-auto transition-transform group-open:rotate-180" />
+    </summary>
   );
 }
 
@@ -67,11 +67,11 @@ export default function SidebarContent({
   forcedAppreciation, setForcedAppreciation,
   annualAppreciation, setAnnualAppreciation,
   cashflowGrowth, setCashflowGrowth,
-  showStockAlt, setShowStockAlt, savingsRate, setSavingsRate,
+  savingsRate, setSavingsRate,
   stockReturn, setStockReturn,
   ltv, setLtv, loanRate, setLoanRate, pilotYearProperties, setPilotYearProperties,
   annualStockDeposit, totalStockInvested, finalStockBalance,
-  onReset, isSimple,
+  isSimple,
 }) {
   const federalEffective = effectiveRate(income);
   const totalEffective   = federalEffective + stateRate / 100;
@@ -79,172 +79,159 @@ export default function SidebarContent({
   return (
     <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
 
-      <button
-        onClick={onReset}
-        className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold transition-colors"
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-        Reset to defaults
-      </button>
+      {/* Personal — open by default */}
+      <details className="group" open>
+        <DisclosureSummary icon={User} label="Personal" />
+        <div className="mt-4 space-y-4">
+          <Slider label="Annual Income" value={income} onChange={setIncome}
+            min={50000} max={2000000} step={25000} format={fmt} />
 
-      {/* Personal */}
-      <section className="space-y-4">
-        <SectionHeader icon={User} label="Personal" />
-        <Slider label="Annual Income" value={income} onChange={setIncome}
-          min={50000} max={2000000} step={10000} format={fmt} />
+          {!isSimple && (
+            <p className="text-[10px] text-slate-500 leading-tight -mt-1">
+              Effective tax · <span className="font-bold text-slate-700 dark:text-slate-300 tabular-nums">{(federalEffective * 100).toFixed(1)}%</span> fed · <span className="font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{(totalEffective * 100).toFixed(1)}%</span> combined
+            </p>
+          )}
 
-        {!isSimple && (
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700/40 bg-slate-100 dark:bg-slate-800/30 px-3 py-2.5 space-y-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] text-slate-500 font-medium">Federal effective rate</span>
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tabular-nums">{(federalEffective * 100).toFixed(1)}%</span>
+          {/* State Tax — label + presets + slider */}
+          {!isSimple && (
+            <div className="space-y-1.5">
+              <div className="flex items-baseline justify-between gap-2">
+                <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">State Tax Rate</label>
+                <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{stateRate}%</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1">
+                {STATE_PRESETS.map(({ label, value, hint }) => (
+                  <button key={value} onClick={() => setStateRate(value)} title={hint}
+                    className={presetButtonClass(stateRate === value)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <input type="range" value={stateRate} onChange={(e) => setStateRate(Number(e.target.value))}
+                min={0} max={15} step={0.5}
+                className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
+              <p className="text-[10px] text-slate-500 leading-tight">Added on top of 2026 federal brackets</p>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] text-slate-500 font-medium">Combined (fed + state)</span>
-              <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{(totalEffective * 100).toFixed(1)}%</span>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* State Tax — label + presets + slider */}
-        {!isSimple && (
+          {/* Enough Number — label + presets + slider */}
           <div className="space-y-1.5">
             <div className="flex items-baseline justify-between gap-2">
-              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">State Tax Rate</label>
-              <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{stateRate}%</span>
+              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Enough Number / mo</label>
+              <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">${(enoughNumber / 1000).toFixed(0)}K</span>
             </div>
             <div className="grid grid-cols-4 gap-1">
-              {STATE_PRESETS.map(({ label, value, hint }) => (
-                <button key={value} onClick={() => setStateRate(value)} title={hint}
-                  className={presetButtonClass(stateRate === value)}>
+              {ENOUGH_PRESETS.map(({ label, value }) => (
+                <button key={value} onClick={() => setEnoughNumber(value)}
+                  className={presetButtonClass(enoughNumber === value)}>
                   {label}
                 </button>
               ))}
             </div>
-            <input type="range" value={stateRate} onChange={(e) => setStateRate(Number(e.target.value))}
-              min={0} max={15} step={0.5}
+            <input type="range" value={enoughNumber} onChange={(e) => setEnoughNumber(Number(e.target.value))}
+              min={2000} max={50000} step={1000}
               className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
-            <p className="text-[10px] text-slate-500 leading-tight">Added on top of 2026 federal brackets</p>
-          </div>
-        )}
-
-        {/* Enough Number — label + presets + slider */}
-        <div className="space-y-1.5">
-          <div className="flex items-baseline justify-between gap-2">
-            <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Enough Number / mo</label>
-            <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">${(enoughNumber / 1000).toFixed(0)}K</span>
-          </div>
-          <div className="grid grid-cols-4 gap-1">
-            {ENOUGH_PRESETS.map(({ label, value }) => (
-              <button key={value} onClick={() => setEnoughNumber(value)}
-                className={presetButtonClass(enoughNumber === value)}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <input type="range" value={enoughNumber} onChange={(e) => setEnoughNumber(Number(e.target.value))}
-            min={2000} max={50000} step={1000}
-            className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
-          <p className="text-[10px] text-slate-500 leading-tight">Monthly passive income to feel free</p>
-        </div>
-      </section>
-
-      {/* Deal Structure */}
-      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-4">
-        <SectionHeader icon={Building2} label="Deal Structure" />
-        <Slider label="Avg Property Value" value={propertyValue} onChange={setPropertyValue}
-          min={500000} max={5000000} step={100000} format={fmt} />
-        <Slider label="Properties / Year" value={propertiesPerYear} onChange={setPropertiesPerYear}
-          min={1} max={6} step={1}
-          format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
-          sublabel="During the buying phase (year 2+)" />
-        {!isSimple && (
-          <Slider label="Year 1 Deals" value={pilotYearProperties} onChange={setPilotYearProperties}
-            min={0} max={4} step={1}
-            format={(v) => v === 0 ? 'Training only' : `${v} ${v === 1 ? 'deal' : 'deals'}`}
-            sublabel="Pilot acquisitions; full pace from year 2" />
-        )}
-        {!isSimple && (
-          <Slider label="Buying Years" value={buyingYears} onChange={setBuyingYears}
-            min={1} max={10} step={1}
-            format={(v) => `${v} ${v === 1 ? 'year' : 'years'}`}
-            sublabel={`Then hold through Y${TOTAL_YEARS}`} />
-        )}
-        {!isSimple && (
-          <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
-            min={4} max={20} step={1} format={(v) => `${v}%`}
-            sublabel="Annual NOI ÷ property value" />
-        )}
-        {!isSimple && <EquityInput value={equityPct} onChange={setEquityPct} />}
-        {!isSimple && (
-          <Slider label="Deal LTV" value={ltv} onChange={setLtv}
-            min={0} max={100} step={5} format={(v) => `${v}%`}
-            sublabel="Bank debt as % of purchase price; rest raised from equity partners" />
-        )}
-        {!isSimple && (
-          <Slider label="Bonus Depreciation" value={depreciation} onChange={setDepreciation}
-            min={10} max={50} step={5} format={(v) => `${v}%`}
-            sublabel="Cost seg, year-1 acceleration" />
-        )}
-        {!isSimple && (
-          <Slider label="Years to Use Depreciation" value={depDeferYears} onChange={setDepDeferYears}
-            min={0} max={15} step={1}
-            format={(v) => (v === 0 ? 'Now' : `${v}y`)}
-            sublabel={depDeferYears === 0
-              ? 'You can deduct today (W-2 + REPS)'
-              : 'Deferred — accumulates until eligible (H1B, pre-REPS)'
-            } />
-        )}
-      </section>
-
-      {/* Growth */}
-      {!isSimple && <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-4">
-        <SectionHeader icon={TrendingUp} label="Growth Assumptions" />
-        <Slider label="Forced Appreciation Y1" value={forcedAppreciation} onChange={setForcedAppreciation}
-          min={0} max={50} step={5} format={(v) => `${v}%`}
-          sublabel="Value-add in purchase year" />
-        <Slider label="Annual Appreciation Y2+" value={annualAppreciation} onChange={setAnnualAppreciation}
-          min={0} max={20} step={1} format={(v) => `${v}%`}
-          sublabel="Compounded after Y1" />
-        <Slider label="Cashflow Growth / Yr" value={cashflowGrowth} onChange={setCashflowGrowth}
-          min={0} max={10} step={1} format={(v) => `${v}%`}
-          sublabel="Rent escalation" />
-      </section>}
-
-      {/* Stocks — always shown */}
-      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <SectionHeader icon={BarChart3} label="Alternative · Stocks" iconColor="text-sky-500 dark:text-sky-400" />
-          {!isSimple && <Switch checked={showStockAlt} onChange={() => setShowStockAlt(!showStockAlt)} />}
-        </div>
-        {!isSimple && (
-          <p className="text-[10px] text-slate-500 leading-relaxed">
-            Compare against saving a % of after-tax income and compounding it in stocks.
-            {showStockAlt ? ' Line shown on chart.' : ' Toggle on to add a line.'}
-          </p>
-        )}
-        <Slider label="Savings Rate" value={savingsRate} onChange={setSavingsRate}
-          min={5} max={50} step={5} format={(v) => `${v}%`}
-          sublabel="% of after-tax income saved" disabled={!isSimple && !showStockAlt} tone="sky" />
-        <Slider label="Stock Market Return" value={stockReturn} onChange={setStockReturn}
-          min={4} max={12} step={1} format={(v) => `${v}%`}
-          sublabel="Annual, net of fees" disabled={!isSimple && !showStockAlt} tone="sky" />
-        <div className={`rounded-xl border border-sky-500/20 bg-sky-500/[0.05] p-3 space-y-1.5 transition-opacity ${(!isSimple && !showStockAlt) ? 'opacity-40' : ''}`}>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Your Stock Investment</div>
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-[10px] text-slate-500">Per year</span>
-            <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(annualStockDeposit)}</span>
-          </div>
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-[10px] text-slate-500">Total over {TOTAL_YEARS} yrs</span>
-            <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(totalStockInvested)}</span>
-          </div>
-          <div className="flex items-baseline justify-between gap-2 pt-1 border-t border-sky-500/20">
-            <span className="text-[10px] text-slate-500">Final balance Y{TOTAL_YEARS}</span>
-            <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(finalStockBalance)}</span>
+            <p className="text-[10px] text-slate-500 leading-tight">Monthly passive income to feel free</p>
           </div>
         </div>
-      </section>
+      </details>
+
+      {/* Deal Structure — collapsed by default */}
+      <details className="group border-t border-slate-200 dark:border-slate-700/40 pt-5">
+        <DisclosureSummary icon={Building2} label="Deal Structure" />
+        <div className="mt-4 space-y-4">
+          <Slider label="Avg Property Value" value={propertyValue} onChange={setPropertyValue}
+            min={500000} max={5000000} step={100000} format={fmt} />
+          <Slider label="Properties / Year" value={propertiesPerYear} onChange={setPropertiesPerYear}
+            min={1} max={6} step={1}
+            format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
+            sublabel="During the buying phase (year 2+)" />
+          {!isSimple && (
+            <Slider label="Year 1 Deals" value={pilotYearProperties} onChange={setPilotYearProperties}
+              min={0} max={4} step={1}
+              format={(v) => v === 0 ? 'Training only' : `${v} ${v === 1 ? 'deal' : 'deals'}`}
+              sublabel="Pilot acquisitions; full pace from year 2" />
+          )}
+          {!isSimple && (
+            <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
+              min={4} max={20} step={1} format={(v) => `${v}%`}
+              sublabel="Annual NOI ÷ property value" />
+          )}
+          {!isSimple && <EquityInput value={equityPct} onChange={setEquityPct} />}
+        </div>
+      </details>
+
+      {/* Advanced deal terms — collapsed by default */}
+      {!isSimple && (
+        <details className="group border-t border-slate-200 dark:border-slate-700/40 pt-5">
+          <DisclosureSummary icon={Building2} label="Advanced deal terms" />
+          <div className="mt-4 space-y-4">
+            <Slider label="Buying Years" value={buyingYears} onChange={setBuyingYears}
+              min={1} max={10} step={1}
+              format={(v) => `${v} ${v === 1 ? 'year' : 'years'}`}
+              sublabel={`Then hold through Y${TOTAL_YEARS}`} />
+            <Slider label="Deal LTV" value={ltv} onChange={setLtv}
+              min={0} max={100} step={5} format={(v) => `${v}%`}
+              sublabel="Bank debt as % of purchase price; rest raised from equity partners" />
+            <Slider label="Bonus Depreciation" value={depreciation} onChange={setDepreciation}
+              min={10} max={50} step={5} format={(v) => `${v}%`}
+              sublabel="Cost seg, year-1 acceleration" />
+            <Slider label="Years to Use Depreciation" value={depDeferYears} onChange={setDepDeferYears}
+              min={0} max={15} step={1}
+              format={(v) => (v === 0 ? 'Now' : `${v}y`)}
+              sublabel={depDeferYears === 0
+                ? 'You can deduct today (W-2 + REPS)'
+                : 'Deferred — accumulates until eligible (H1B, pre-REPS)'
+              } />
+          </div>
+        </details>
+      )}
+
+      {/* Growth Assumptions — collapsed by default */}
+      {!isSimple && (
+        <details className="group border-t border-slate-200 dark:border-slate-700/40 pt-5">
+          <DisclosureSummary icon={TrendingUp} label="Growth Assumptions" />
+          <div className="mt-4 space-y-4">
+            <Slider label="Forced Appreciation Y1" value={forcedAppreciation} onChange={setForcedAppreciation}
+              min={0} max={50} step={5} format={(v) => `${v}%`}
+              sublabel="Value-add in purchase year" />
+            <Slider label="Annual Appreciation Y2+" value={annualAppreciation} onChange={setAnnualAppreciation}
+              min={0} max={20} step={1} format={(v) => `${v}%`}
+              sublabel="Compounded after Y1" />
+            <Slider label="Cashflow Growth / Yr" value={cashflowGrowth} onChange={setCashflowGrowth}
+              min={0} max={10} step={1} format={(v) => `${v}%`}
+              sublabel="Rent escalation" />
+          </div>
+        </details>
+      )}
+
+      {/* Stocks — collapsed by default; chart line is always shown */}
+      <details className="group border-t border-slate-200 dark:border-slate-700/40 pt-5">
+        <DisclosureSummary icon={BarChart3} label="Alternative · Stocks" iconColor="text-sky-500 dark:text-sky-400" />
+        <div className="mt-4 space-y-3">
+          <Slider label="Savings Rate" value={savingsRate} onChange={setSavingsRate}
+            min={5} max={50} step={5} format={(v) => `${v}%`}
+            sublabel="% of after-tax income saved" tone="sky" />
+          <Slider label="Stock Market Return" value={stockReturn} onChange={setStockReturn}
+            min={4} max={12} step={1} format={(v) => `${v}%`}
+            sublabel="Annual, net of fees" tone="sky" />
+          <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.05] p-3 space-y-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Your Stock Investment</div>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-[10px] text-slate-500">Per year</span>
+              <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(annualStockDeposit)}</span>
+            </div>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-[10px] text-slate-500">Total over {TOTAL_YEARS} yrs</span>
+              <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(totalStockInvested)}</span>
+            </div>
+            <div className="flex items-baseline justify-between gap-2 pt-1 border-t border-sky-500/20">
+              <span className="text-[10px] text-slate-500">Final balance Y{TOTAL_YEARS}</span>
+              <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(finalStockBalance)}</span>
+            </div>
+          </div>
+        </div>
+      </details>
 
     </div>
   );

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Target, PanelLeftClose } from 'lucide-react';
+import { Target, PanelLeftClose, RotateCcw } from 'lucide-react';
 import SidebarContent from './SidebarContent.jsx';
 
-export default function Sidebar({ onClose, ...contentProps }) {
+export default function Sidebar({ onClose, onReset, ...contentProps }) {
   return (
     // w-72 + flex-shrink-0: width never changes regardless of content
     <aside className="hidden md:block w-72 flex-shrink-0">
@@ -14,13 +14,22 @@ export default function Sidebar({ onClose, ...contentProps }) {
               <Target className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-700 dark:text-slate-200">Your Numbers</h2>
             </div>
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="Hide panel"
-            >
-              <PanelLeftClose className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={onReset}
+                className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Reset to defaults"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Hide panel"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <SidebarContent {...contentProps} />

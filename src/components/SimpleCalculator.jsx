@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TrendingUp, Banknote, Receipt, Trophy, AlertTriangle, Sparkles } from 'lucide-react';
 import { fmt } from '../utils/fmt.js';
 import WealthChart from './WealthChart.jsx';
+import CashflowChart from './CashflowChart.jsx';
 
 function ComparisonTile({ label, icon: Icon, takeAction, doNothing, actionColor, doNothingLabel }) {
   return (
@@ -84,7 +85,7 @@ export default function SimpleCalculator({
             onChange={setIncome}
             min={50000}
             max={2000000}
-            step={10000}
+            step={25000}
           />
           <NumberInput
             label="Monthly 'I'm Free At'"
@@ -200,6 +201,22 @@ export default function SimpleCalculator({
           totalYears={totalYears}
           showStockAlt={false}
           enoughNumber={enoughNumber}
+          isDark={isDark}
+        />
+      </div>
+
+      {/* Secondary: cashflow trajectory — when freedom hits */}
+      <div className="opacity-90">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 text-center">
+          Monthly Passive Income · When You Cross Your Enough Number
+        </p>
+        <CashflowChart
+          data={projection.data}
+          enoughNumber={enoughNumber}
+          isReachable={projection.isReachable}
+          yearsToReach={projection.yearsToReach}
+          totalYears={totalYears}
+          buyingYears={buyingYears}
           isDark={isDark}
         />
       </div>
