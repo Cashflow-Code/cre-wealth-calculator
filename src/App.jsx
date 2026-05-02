@@ -159,14 +159,16 @@ export default function App() {
         {/* Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-3">
           <div className="flex items-center gap-3">
-            {/* Mobile menu toggle */}
-            <button
-              onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
-              aria-label="Open settings"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+            {/* Mobile menu toggle - Advanced only */}
+            {!isSimple && (
+              <button
+                onClick={() => setMobileSidebarOpen(true)}
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
+                aria-label="Open settings"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
             <Logo />
           </div>
           <div className="flex items-center gap-2 justify-center sm:justify-end flex-wrap">
@@ -561,8 +563,8 @@ export default function App() {
 
         )} {/* end isSimple conditional */}
 
-        {/* Desktop sidebar re-open toggle */}
-        {!sidebarOpen && (
+        {/* Desktop sidebar re-open toggle - Advanced only */}
+        {!isSimple && !sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
             className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-2 px-2 py-4 rounded-r-xl bg-white dark:bg-[#0c1428] border border-l-0 border-slate-200 dark:border-slate-700/40 shadow-2xl hover:border-emerald-500/30 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
