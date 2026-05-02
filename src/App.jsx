@@ -342,7 +342,7 @@ export default function App() {
                         <ContrastBullet tone="emerald">
                           You'd be free in{' '}
                           <strong className="text-emerald-500 dark:text-emerald-400">
-                            {projection.yearsToReach}–{projection.yearsToReach + 1} years
+                            {projection.yearsToReach - 1}–{projection.yearsToReach} years
                           </strong>
                           {' '}— <strong>{projection.propsNeeded} properties</strong> at{' '}
                           <strong>{fmt(projection.cashflowAtFreedom)}/mo</strong>
