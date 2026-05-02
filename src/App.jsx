@@ -274,7 +274,7 @@ export default function App() {
                   </div>
 
                   {/* Right: where the gap comes from */}
-                  <div className="flex-1 rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-5 py-4">
+                  <div className="flex-1 lg:max-w-[500px] lg:ml-auto rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-5 py-4">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-2.5">Where the gap comes from</p>
                     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                       {[
@@ -320,7 +320,8 @@ export default function App() {
                       <span className="text-sm text-slate-500 dark:text-slate-400">and generating</span>
                       <span className="flex items-baseline gap-1.5">
                         <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
-                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo passive</span>
+                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">passive</span>
                       </span>
                     </div>
                   </div>
@@ -381,7 +382,7 @@ export default function App() {
                 {[
                   { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
                   { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
-                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'you could cover up to 100% of the acquisition' },
+                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'can cover up to 100% of the acquisition' },
                 ].map(({ label, value, sub }) => (
                   <div key={label} className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-1.5">{label}</p>
@@ -544,7 +545,7 @@ export default function App() {
             <section className="rounded-2xl border border-slate-200/80 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 overflow-hidden">
               <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
                 <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">But isn't stock investing more passive?</p>
-                <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">At Y{TOTAL_YEARS} &mdash; they're additive, not either-or</p>
+                <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">It's actually better to do both.</p>
               </div>
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
 
@@ -553,15 +554,24 @@ export default function App() {
                   <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
                     <div className="p-4">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                      </div>
                     </div>
                     <div className="p-4">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                      </div>
                     </div>
                     <div className="p-4 bg-slate-500/[0.04]">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Combined</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{fmt(projection.data[TOTAL_YEARS].investorWealth + finalStockBalance)}</div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{fmt(projection.data[TOTAL_YEARS].investorWealth + finalStockBalance)}</div>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
