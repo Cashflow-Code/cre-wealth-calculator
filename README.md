@@ -99,18 +99,3 @@ Deploys to Vercel via [`vercel.json`](vercel.json). Pushes to `main` auto-deploy
 This calculator quantifies the math, but the playbook is the bigger story.
 
 [**📘 Learn the full strategy at learn.cashflowcode.ai →**](https://learn.cashflowcode.ai)
-
-## Recommended GitHub topics
-
-When making the repo public, paste these into **Settings → Topics**:
-
-```
-commercial-real-estate  real-estate  cashflow-calculator  wealth-calculator
-financial-modeling      passive-income  tax-strategy        depreciation
-react                   vite            tailwindcss          recharts
-financial-freedom
-```
-
-## License
-
-[TBD]

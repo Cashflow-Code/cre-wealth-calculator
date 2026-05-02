@@ -274,9 +274,9 @@ export default function App() {
                   </div>
 
                   {/* Right: where the gap comes from */}
-                  <div className="flex-1 lg:max-w-[640px] lg:ml-auto rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-4 py-3">
+                  <div className="flex-1 rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-5 py-4">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-2.5">Where the gap comes from</p>
-                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                       {[
                         { line1: 'Equity',     line2: 'Appreciation', value: horizonData.equityGain,                                         negative: false },
                         { line1: 'Cumulative', line2: 'Cashflow',     value: horizonData.cumulativeCashflow,                                 negative: false },
@@ -291,7 +291,7 @@ export default function App() {
                               {line1}<br/>{line2}
                             </span>
                           </div>
-                          <span className={`text-sm font-bold tabular-nums ${negative ? 'text-red-500 dark:text-red-400' : 'text-amber-500 dark:text-amber-400'}`}>
+                          <span className={`text-sm font-bold tabular-nums ml-[18px] ${negative ? 'text-red-500 dark:text-red-400' : 'text-amber-500 dark:text-amber-400'}`}>
                             {negative ? '−' : '+'}{fmt(value)}
                           </span>
                         </div>
@@ -307,17 +307,17 @@ export default function App() {
                       <Trophy className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
                       <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in approximately</span>
                     </div>
-                    <div className="flex items-baseline gap-3 sm:gap-5 flex-wrap">
+                    <div className="flex items-baseline gap-2 flex-wrap">
                       <span className="flex items-baseline gap-1.5">
                         <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
-                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">yrs</span>
+                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">yrs,</span>
                       </span>
-                      <span className="text-slate-300 dark:text-slate-600">&middot;</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
                       <span className="flex items-baseline gap-1.5">
                         <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
                         <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
                       </span>
-                      <span className="text-slate-300 dark:text-slate-600">&middot;</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">and generating</span>
                       <span className="flex items-baseline gap-1.5">
                         <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
                         <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo passive</span>
@@ -364,29 +364,28 @@ export default function App() {
               </div>
             </section>
 
-            {/* Scale Without Your Capital */}
-            <section className="rounded-2xl border border-teal-500/20 bg-teal-500/[0.04] overflow-hidden">
+            {/* How much capital do I need? */}
+            <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] overflow-hidden">
               <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-teal-500 dark:text-teal-400">Scale Without Your Capital</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400">How much capital do I need?</p>
               </div>
 
               {/* Hero answer */}
               <div className="px-4 sm:px-6 pb-4">
-                <p className="text-3xl sm:text-4xl font-black text-teal-500 dark:text-teal-400 leading-tight">With Creative Financing</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  you could cover up to <strong className="text-teal-500 dark:text-teal-400">100%</strong> of the acquisition
-                </p>
+                <p className="text-5xl sm:text-6xl font-black text-amber-500 dark:text-amber-400 leading-none tabular-nums">$0</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">of your own capital is required to get started</p>
               </div>
 
-              {/* Two engines (supporting evidence) */}
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Three engines (supporting evidence) */}
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
-                  { label: 'Taxes Redirected', value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
-                  { label: 'Tenant Principal',  value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
+                  { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
+                  { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
+                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'you could cover up to 100% of the acquisition' },
                 ].map(({ label, value, sub }) => (
-                  <div key={label} className="rounded-xl border border-teal-500/20 bg-teal-500/[0.06] px-4 py-3">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-teal-500/60 dark:text-teal-400/60 mb-1.5">{label}</p>
-                    <p className="text-base sm:text-lg font-black tabular-nums text-teal-500 dark:text-teal-400">{value}</p>
+                  <div key={label} className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-1.5">{label}</p>
+                    <p className="text-base sm:text-lg font-black tabular-nums text-amber-500 dark:text-amber-400">{value}</p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
                   </div>
                 ))}
@@ -542,23 +541,23 @@ export default function App() {
             </section>
 
             {/* But Isn't Stock Investing More Passive? */}
-            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
+            <section className="rounded-2xl border border-slate-200/80 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 overflow-hidden">
               <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But isn't stock investing more passive?</p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">At Y{TOTAL_YEARS} &mdash; they're additive, not either-or</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">But isn't stock investing more passive?</p>
+                <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">At Y{TOTAL_YEARS} &mdash; they're additive, not either-or</p>
               </div>
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
 
-                {/* 3-cell comparison: CRE + Stocks = Combined */}
+                {/* 3-cell comparison: Stocks + CRE = Combined */}
                 <div className="rounded-xl border border-slate-200/80 dark:border-slate-700/40 bg-white/60 dark:bg-[#0c1428]/60 overflow-hidden">
                   <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
                     <div className="p-4">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
-                    </div>
-                    <div className="p-4">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
                       <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
+                      <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
                     </div>
                     <div className="p-4 bg-slate-500/[0.04]">
                       <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Combined</div>
@@ -577,8 +576,8 @@ export default function App() {
                       {' '}whether or not you do CRE &mdash; nothing's traded off.
                     </p>
                   </div>
-                  <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3 flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
+                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
                       <strong className="text-emerald-500 dark:text-emerald-400">CRE cashflow + tax savings</strong>
                       {' '}can funnel back into your brokerage &mdash; part of the{' '}
