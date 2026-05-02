@@ -19,7 +19,7 @@ const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
   capRate: 12, depreciation: 35, depDeferYears: 0, equityPct: 33,
-  forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 3,
+  forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 2,
   showStockAlt: true, savingsRate: 20, stockReturn: 8,
 };
 
