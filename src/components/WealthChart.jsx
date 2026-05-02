@@ -67,7 +67,7 @@ export default function WealthChart({
               <ReferenceLine
                 x={`Y${yearsToReach}`}
                 stroke="#10b981" strokeDasharray="2 2"
-                label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: -5 }}
+                label={{ value: 'Freedom', fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: -5 }}
               />
             )}
             <Area type="monotone" dataKey="investorWealth" stroke="none" fill="url(#emeraldGrad)" />
