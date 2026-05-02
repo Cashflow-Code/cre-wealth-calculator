@@ -33,10 +33,12 @@ export function computeProjection({
   cashflowGrowth,
   savingsRate,
   stockReturn,
-  ltv = 0,
-  loanRate = 6.5,
-  loanTerm = 25,
+  ltv = 70,
+  loanRate = 6,
+  loanTerm = 30,
+  pilotYearProperties = null,
 }) {
+  const propsYear1 = pilotYearProperties !== null ? pilotYearProperties : propertiesPerYear;
   const stateRateDecimal  = stateRate / 100;
   const ltvDecimal        = ltv / 100;
   const loanRateDecimal   = loanRate / 100;
@@ -87,8 +89,9 @@ export function computeProjection({
     const isBuying = year <= buyingYears;
 
     if (isBuying) {
-      cumulativeProperties  += propertiesPerYear;
-      const totalPurchase    = propertiesPerYear * propertyValue;
+      const propsThisYear    = year === 1 ? propsYear1 : propertiesPerYear;
+      cumulativeProperties  += propsThisYear;
+      const totalPurchase    = propsThisYear * propertyValue;
       const loanPrincipal    = totalPurchase * ltvDecimal;
       const downPayment      = totalPurchase - loanPrincipal;
 
@@ -96,7 +99,6 @@ export function computeProjection({
       totalOriginalPurchaseCost += totalPurchase;
       totalDealMonthlyCashflow += totalPurchase * capRateDecimal / 12;
       depPool                  += totalPurchase * (depreciation / 100) * equityRate;
-      // capitalDeployed stays 0: investor raises capital / uses creative financing
 
       if (loanPrincipal > 0) {
         loanCohorts.push({
@@ -107,11 +109,10 @@ export function computeProjection({
       }
     }
 
-    // Aggregate loan position across all cohorts
     let totalLoanBalance       = 0;
     let totalAnnualDebtService = 0;
     for (const cohort of loanCohorts) {
-      const age = year - cohort.originYear; // 0 = purchase year
+      const age = year - cohort.originYear;
       if (age < loanTerm) {
         totalAnnualDebtService += cohort.annualPayment;
         totalLoanBalance       += loanRemainingBalance(
@@ -120,7 +121,6 @@ export function computeProjection({
       }
     }
 
-    // Principal paid down this year across all active cohorts (age=0 = origination year)
     let yearPrincipalPaydown = 0;
     for (const cohort of loanCohorts) {
       const age = year - cohort.originYear;
@@ -134,14 +134,12 @@ export function computeProjection({
     yearPrincipalPaydown     = Math.max(0, yearPrincipalPaydown) * equityRate;
     cumulativePrincipalPaydown += yearPrincipalPaydown;
 
-    // Equity (net of loan balance) and cashflow (net of debt service)
     const yourEquity           = Math.max(0, (totalDealAssetValue - totalLoanBalance) * equityRate);
     const dealNetMonthlyCF     = totalDealMonthlyCashflow - totalAnnualDebtService / 12;
     const yourMonthlyCashflow  = dealNetMonthlyCF * equityRate;
     const yourAnnualCashflow   = yourMonthlyCashflow * 12;
     cumulativeCashflow        += yourAnnualCashflow;
 
-    // Tax savings via depreciation — W2 income only (cashflow is tax-free via REPS, shown gross)
     let yearTaxSavings  = 0;
     const depEligible   = year >= eligibleStartYear;
 
@@ -155,7 +153,6 @@ export function computeProjection({
     const yearTaxesPaid      = computeTotalTax(income, stateRateDecimal);
     cumulativeTaxesPaid     += yearTaxesPaid;
 
-    // Value of the remaining depreciation pool at current income/rates
     const bankedFutureTax = taxSavingsFromDeduction(income, depPool, stateRateDecimal);
     const equityGain      = Math.max(0, (totalDealAssetValue - totalOriginalPurchaseCost) * equityRate);
     const totalProfits    = equityGain + cumulativePrincipalPaydown + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
@@ -190,7 +187,6 @@ export function computeProjection({
     });
   }
 
-  // Freedom calculation — scan actual model data for first year cashflow >= enoughNumber
   const grossMonthlyPerProp    = propertyValue * capRateDecimal / 12;
   const loanPerPropMonthly     = ltvDecimal > 0
     ? annualLoanPayment(propertyValue * ltvDecimal, loanRateDecimal, loanTerm) / 12
@@ -205,9 +201,27 @@ export function computeProjection({
   const cashflowAtFreedom = isReachable ? data[yearsToReach].monthlyCashflow : 0;
   const propsNeeded       = isReachable ? data[yearsToReach].properties      : Infinity;
 
+  const minPropsNeeded = monthlyCashflowPerProp > 0
+    ? Math.ceil(enoughNumber / monthlyCashflowPerProp)
+    : Infinity;
+
+  let yearsLabel = isReachable ? String(yearsToReach) : null;
+  if (isReachable && yearsToReach >= 1) {
+    const prevCF     = data[yearsToReach - 1]?.monthlyCashflow ?? 0;
+    const frac       = cashflowAtFreedom > prevCF
+      ? Math.max(0, Math.min(1, (enoughNumber - prevCF) / (cashflowAtFreedom - prevCF)))
+      : 0;
+    const fractional = (yearsToReach - 1) + frac;
+    const floorY     = Math.floor(fractional);
+    const remainder  = fractional - floorY;
+    if (remainder < 0.25)       yearsLabel = String(Math.max(1, floorY));
+    else if (remainder <= 0.75) yearsLabel = `${Math.max(1, floorY)}–${floorY + 1}`;
+    else                        yearsLabel = String(floorY + 1);
+  }
+
   return {
-    data, propsNeeded, yearsToReach, cashflowAtFreedom,
-    isReachable, eligibleStartYear,
+    data, propsNeeded, minPropsNeeded, yearsToReach, yearsLabel,
+    cashflowAtFreedom, isReachable, eligibleStartYear,
     monthlyCashflowPerProp,
   };
 }

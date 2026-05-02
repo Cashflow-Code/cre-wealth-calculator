@@ -69,6 +69,7 @@ export default function SidebarContent({
   cashflowGrowth, setCashflowGrowth,
   showStockAlt, setShowStockAlt, savingsRate, setSavingsRate,
   stockReturn, setStockReturn,
+  ltv, setLtv, loanRate, setLoanRate, pilotYearProperties, setPilotYearProperties,
   annualStockDeposit, totalStockInvested, finalStockBalance,
   onReset, isSimple,
 }) {
@@ -154,9 +155,15 @@ export default function SidebarContent({
         <Slider label="Avg Property Value" value={propertyValue} onChange={setPropertyValue}
           min={500000} max={5000000} step={100000} format={fmt} />
         <Slider label="Properties / Year" value={propertiesPerYear} onChange={setPropertiesPerYear}
-          min={1} max={10} step={1}
+          min={1} max={6} step={1}
           format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
-          sublabel="During the buying phase" />
+          sublabel="During the buying phase (year 2+)" />
+        {!isSimple && (
+          <Slider label="Year 1 Deals" value={pilotYearProperties} onChange={setPilotYearProperties}
+            min={0} max={4} step={1}
+            format={(v) => v === 0 ? 'Training only' : `${v} ${v === 1 ? 'deal' : 'deals'}`}
+            sublabel="Pilot acquisitions; full pace from year 2" />
+        )}
         {!isSimple && (
           <Slider label="Buying Years" value={buyingYears} onChange={setBuyingYears}
             min={1} max={10} step={1}
@@ -169,6 +176,11 @@ export default function SidebarContent({
             sublabel="Annual NOI ÷ property value" />
         )}
         {!isSimple && <EquityInput value={equityPct} onChange={setEquityPct} />}
+        {!isSimple && (
+          <Slider label="Deal LTV" value={ltv} onChange={setLtv}
+            min={0} max={100} step={5} format={(v) => `${v}%`}
+            sublabel="Bank debt as % of purchase price; rest raised from equity partners" />
+        )}
         {!isSimple && (
           <Slider label="Bonus Depreciation" value={depreciation} onChange={setDepreciation}
             min={10} max={50} step={5} format={(v) => `${v}%`}

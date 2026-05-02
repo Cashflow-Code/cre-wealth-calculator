@@ -17,10 +17,11 @@ import { computeTotalTax } from './utils/tax.js';
 
 const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
-  propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
-  capRate: 12, depreciation: 35, depDeferYears: 0, equityPct: 33,
+  propertyValue: 3_000_000, propertiesPerYear: 4, buyingYears: 5,
+  capRate: 8, depreciation: 35, depDeferYears: 0, equityPct: 25,
   forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 2,
   showStockAlt: true, savingsRate: 20, stockReturn: 8,
+  ltv: 70, loanRate: 6, pilotYearProperties: 2,
 };
 
 export default function App() {
@@ -37,10 +38,13 @@ export default function App() {
   const [forcedAppreciation, setForcedAppreciation] = useState(DEFAULTS.forcedAppreciation);
   const [annualAppreciation, setAnnualAppreciation] = useState(DEFAULTS.annualAppreciation);
   const [cashflowGrowth, setCashflowGrowth]         = useState(DEFAULTS.cashflowGrowth);
-  const [showStockAlt, setShowStockAlt]             = useState(DEFAULTS.showStockAlt);
-  const [savingsRate, setSavingsRate]               = useState(DEFAULTS.savingsRate);
-  const [stockReturn, setStockReturn]               = useState(DEFAULTS.stockReturn);
-  const [horizon, setHorizon]                       = useState(3);
+  const [showStockAlt, setShowStockAlt]               = useState(DEFAULTS.showStockAlt);
+  const [savingsRate, setSavingsRate]                 = useState(DEFAULTS.savingsRate);
+  const [stockReturn, setStockReturn]                 = useState(DEFAULTS.stockReturn);
+  const [ltv, setLtv]                                 = useState(DEFAULTS.ltv);
+  const [loanRate, setLoanRate]                       = useState(DEFAULTS.loanRate);
+  const [pilotYearProperties, setPilotYearProperties] = useState(DEFAULTS.pilotYearProperties);
+  const [horizon, setHorizon]                         = useState(3);
   const [sidebarOpen, setSidebarOpen]               = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen]   = useState(false);
   const [isDark, setIsDark]                         = useState(false);
@@ -62,17 +66,20 @@ export default function App() {
     setAnnualAppreciation(DEFAULTS.annualAppreciation);
     setCashflowGrowth(DEFAULTS.cashflowGrowth);       setShowStockAlt(DEFAULTS.showStockAlt);
     setSavingsRate(DEFAULTS.savingsRate);             setStockReturn(DEFAULTS.stockReturn);
+    setLtv(DEFAULTS.ltv);                             setLoanRate(DEFAULTS.loanRate);
+    setPilotYearProperties(DEFAULTS.pilotYearProperties);
   };
 
   const projection = useMemo(() => computeProjection({
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
-    ltv: 100, loanRate: 6.5, loanTerm: 30,
+    ltv, loanRate, loanTerm: 30, pilotYearProperties,
   }), [
     income, stateRate, enoughNumber, propertyValue, propertiesPerYear,
     buyingYears, capRate, depreciation, depDeferYears, equityPct,
     forcedAppreciation, annualAppreciation, cashflowGrowth, savingsRate, stockReturn,
+    ltv, loanRate, pilotYearProperties,
   ]);
 
   const horizonData        = projection.data[horizon];
@@ -140,6 +147,7 @@ export default function App() {
     annualAppreciation, setAnnualAppreciation,
     cashflowGrowth, setCashflowGrowth,
     showStockAlt, setShowStockAlt, savingsRate, setSavingsRate, stockReturn, setStockReturn,
+    ltv, setLtv, loanRate, setLoanRate, pilotYearProperties, setPilotYearProperties,
     annualStockDeposit, totalStockInvested,
     finalStockBalance,
     onReset: resetToDefaults,
@@ -305,10 +313,10 @@ export default function App() {
                   <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.08] px-5 py-4 flex items-baseline gap-2 flex-wrap">
                     <Trophy className="w-5 h-5 text-emerald-500 dark:text-emerald-400 self-center flex-shrink-0" />
                     <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in</span>
-                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
+                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsLabel}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">years,</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
-                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
+                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.minPropsNeeded}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">with</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>

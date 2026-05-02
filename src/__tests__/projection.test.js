@@ -3,7 +3,7 @@ import { computeProjection, TOTAL_YEARS } from '../utils/projection.js';
 
 const defaults = {
   income: 300_000,
-  stateRate: 5,          // replaces flat taxRate
+  stateRate: 5,
   enoughNumber: 10_000,
   propertyValue: 2_000_000,
   propertiesPerYear: 2,
@@ -20,6 +20,7 @@ const defaults = {
   ltv: 0,
   loanRate: 6.5,
   loanTerm: 25,
+  pilotYearProperties: 2,
 };
 
 describe('computeProjection', () => {
@@ -43,7 +44,7 @@ describe('computeProjection', () => {
     const { data } = computeProjection(defaults);
     expect(data[1].properties).toBe(2);
     expect(data[5].properties).toBe(10);
-    expect(data[6].properties).toBe(10); // hold phase
+    expect(data[6].properties).toBe(10);
     expect(data[20].properties).toBe(10);
   });
 
@@ -125,14 +126,12 @@ describe('computeProjection', () => {
 
     it('loan is paid off after loanTerm years', () => {
       const { data } = computeProjection({ ...defaults, ltv: 75, loanTerm: 10 });
-      // After term ends, loan balance should be zero (or very close)
       expect(data[Math.min(15, TOTAL_YEARS)].totalLoanBalance).toBeCloseTo(0, -2);
     });
 
     it('higher LTV means lower equity at Y5', () => {
       const noLoan   = computeProjection({ ...defaults, ltv: 0 });
       const highLoan = computeProjection({ ...defaults, ltv: 75 });
-      // More leverage → lower net equity
       expect(highLoan.data[5].equity).toBeLessThan(noLoan.data[5].equity);
     });
   });
@@ -146,7 +145,6 @@ describe('computeProjection', () => {
 
     it('yearTaxesPaid is higher than a simple 10% flat rate would give', () => {
       const { data } = computeProjection({ ...defaults, stateRate: 0 });
-      // At $300K income, marginal brackets yield more tax than 10%
       expect(data[1].yearTaxesPaid).toBeGreaterThan(300_000 * 0.10);
     });
   });
@@ -184,7 +182,7 @@ describe('computeProjection', () => {
 
   describe('principal paydown', () => {
     it('yearPrincipalPaydown is 0 in every year when ltv=0', () => {
-      const { data } = computeProjection(defaults); // defaults has ltv: 0
+      const { data } = computeProjection(defaults);
       for (let i = 1; i <= TOTAL_YEARS; i++) {
         expect(data[i].yearPrincipalPaydown).toBe(0);
       }
@@ -287,11 +285,73 @@ describe('computeProjection', () => {
     });
 
     it('more propertiesPerYear reaches freedom sooner', () => {
-      // enoughNumber=10_000, monthlyCashflowPerProp≈$4,167 → propsNeeded=3
-      // slow (2/yr): ceil(3/2)=2 years; fast (10/yr): ceil(3/10)=1 year
-      const slow = computeProjection({ ...reachableDefaults, propertiesPerYear: 2 });
-      const fast = computeProjection({ ...reachableDefaults, propertiesPerYear: 10 });
+      const slow = computeProjection({ ...reachableDefaults, propertiesPerYear: 2,  pilotYearProperties: 0 });
+      const fast = computeProjection({ ...reachableDefaults, propertiesPerYear: 10, pilotYearProperties: 0 });
       expect(fast.yearsToReach).toBeLessThan(slow.yearsToReach);
     });
+  });
+});
+
+describe('pilot-year ramp (pilotYearProperties)', () => {
+  it('year 1 uses pilotYearProperties, year 2 accumulates normally', () => {
+    const { data } = computeProjection({ ...defaults, pilotYearProperties: 1 });
+    expect(data[1].properties).toBe(1);
+    expect(data[2].properties).toBe(1 + defaults.propertiesPerYear);
+  });
+
+  it('pilotYearProperties=0 → no year-1 acquisition and zero cashflow', () => {
+    const { data } = computeProjection({ ...defaults, pilotYearProperties: 0 });
+    expect(data[1].properties).toBe(0);
+    expect(data[1].monthlyCashflow).toBe(0);
+  });
+
+  it('null pilotYearProperties behaves like propertiesPerYear (backward compat)', () => {
+    const withNull    = computeProjection({ ...defaults, pilotYearProperties: null });
+    const withDefault = computeProjection({ ...defaults });
+    expect(withNull.data[1].properties).toBe(withDefault.data[1].properties);
+  });
+});
+
+describe('LTV slider', () => {
+  it('higher LTV → more debt service → lower cashflow', () => {
+    const low  = computeProjection({ ...defaults, ltv: 50,  loanRate: 6, loanTerm: 30 });
+    const high = computeProjection({ ...defaults, ltv: 100, loanRate: 6, loanTerm: 30 });
+    expect(low.data[1].monthlyCashflow).toBeGreaterThan(high.data[1].monthlyCashflow);
+  });
+
+  it('ltv=0 → no debt service', () => {
+    const { data } = computeProjection({ ...defaults, ltv: 0 });
+    expect(data[1].annualDebtService).toBe(0);
+  });
+});
+
+describe('minPropsNeeded', () => {
+  it('is at most propsNeeded when freedom is reachable', () => {
+    const p = computeProjection({ ...defaults, ltv: 70, loanRate: 6, loanTerm: 30 });
+    if (p.isReachable) {
+      expect(p.minPropsNeeded).toBeLessThanOrEqual(p.propsNeeded);
+    }
+  });
+
+  it('is Infinity when monthlyCashflowPerProp is 0', () => {
+    const p = computeProjection({ ...defaults, capRate: 0 });
+    expect(p.minPropsNeeded).toBe(Infinity);
+  });
+});
+
+describe('yearsLabel', () => {
+  it('returns a string when freedom is reachable', () => {
+    const reachable = { ...defaults, capRate: 20, enoughNumber: 5_000 };
+    const p = computeProjection(reachable);
+    if (p.isReachable) {
+      expect(typeof p.yearsLabel).toBe('string');
+      expect(p.yearsLabel.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('is null when not reachable', () => {
+    const p = computeProjection({ ...defaults, enoughNumber: 999_999_999 });
+    expect(p.isReachable).toBe(false);
+    expect(p.yearsLabel).toBeNull();
   });
 });
