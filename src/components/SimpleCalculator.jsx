@@ -160,7 +160,7 @@ export default function SimpleCalculator({
           <span className="text-sm text-slate-500 dark:text-slate-400">with</span>
           <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
           <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo</span>
-          <span className="text-sm text-slate-500 dark:text-slate-400">in passive income</span>
+          <span className="text-sm text-slate-500 dark:text-slate-400">total passive income</span>
         </div>
       ) : (
         <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-5 py-4 flex items-start gap-3">
