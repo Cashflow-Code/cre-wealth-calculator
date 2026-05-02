@@ -99,6 +99,7 @@ export function computeProjection({
       totalOriginalPurchaseCost += totalPurchase;
       totalDealMonthlyCashflow += totalPurchase * capRateDecimal / 12;
       depPool                  += totalPurchase * (depreciation / 100) * equityRate;
+      // capitalDeployed stays 0: investor raises capital / uses creative financing
 
       if (loanPrincipal > 0) {
         loanCohorts.push({
@@ -109,10 +110,11 @@ export function computeProjection({
       }
     }
 
+    // Aggregate loan position across all cohorts
     let totalLoanBalance       = 0;
     let totalAnnualDebtService = 0;
     for (const cohort of loanCohorts) {
-      const age = year - cohort.originYear;
+      const age = year - cohort.originYear; // 0 = purchase year
       if (age < loanTerm) {
         totalAnnualDebtService += cohort.annualPayment;
         totalLoanBalance       += loanRemainingBalance(
@@ -121,6 +123,7 @@ export function computeProjection({
       }
     }
 
+    // Principal paid down this year across all active cohorts (age=0 = origination year)
     let yearPrincipalPaydown = 0;
     for (const cohort of loanCohorts) {
       const age = year - cohort.originYear;
@@ -134,12 +137,14 @@ export function computeProjection({
     yearPrincipalPaydown     = Math.max(0, yearPrincipalPaydown) * equityRate;
     cumulativePrincipalPaydown += yearPrincipalPaydown;
 
+    // Equity (net of loan balance) and cashflow (net of debt service)
     const yourEquity           = Math.max(0, (totalDealAssetValue - totalLoanBalance) * equityRate);
     const dealNetMonthlyCF     = totalDealMonthlyCashflow - totalAnnualDebtService / 12;
     const yourMonthlyCashflow  = dealNetMonthlyCF * equityRate;
     const yourAnnualCashflow   = yourMonthlyCashflow * 12;
     cumulativeCashflow        += yourAnnualCashflow;
 
+    // Tax savings via depreciation — W2 income only (cashflow is tax-free via REPS, shown gross)
     let yearTaxSavings  = 0;
     const depEligible   = year >= eligibleStartYear;
 
@@ -153,6 +158,7 @@ export function computeProjection({
     const yearTaxesPaid      = computeTotalTax(income, stateRateDecimal);
     cumulativeTaxesPaid     += yearTaxesPaid;
 
+    // Value of the remaining depreciation pool at current income/rates
     const bankedFutureTax = taxSavingsFromDeduction(income, depPool, stateRateDecimal);
     const equityGain      = Math.max(0, (totalDealAssetValue - totalOriginalPurchaseCost) * equityRate);
     const totalProfits    = equityGain + cumulativePrincipalPaydown + cumulativeCashflow + cumulativeTaxSavings + bankedFutureTax;
@@ -187,6 +193,7 @@ export function computeProjection({
     });
   }
 
+  // Freedom calculation — scan actual model data for first year cashflow >= enoughNumber
   const grossMonthlyPerProp    = propertyValue * capRateDecimal / 12;
   const loanPerPropMonthly     = ltvDecimal > 0
     ? annualLoanPayment(propertyValue * ltvDecimal, loanRateDecimal, loanTerm) / 12

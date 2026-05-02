@@ -3,7 +3,7 @@ import { computeProjection, TOTAL_YEARS } from '../utils/projection.js';
 
 const defaults = {
   income: 300_000,
-  stateRate: 5,
+  stateRate: 5,          // replaces flat taxRate
   enoughNumber: 10_000,
   propertyValue: 2_000_000,
   propertiesPerYear: 2,
@@ -20,7 +20,7 @@ const defaults = {
   ltv: 0,
   loanRate: 6.5,
   loanTerm: 25,
-  pilotYearProperties: 2,
+  pilotYearProperties: 2,  // matches propertiesPerYear — preserves existing assertions
 };
 
 describe('computeProjection', () => {
@@ -44,7 +44,7 @@ describe('computeProjection', () => {
     const { data } = computeProjection(defaults);
     expect(data[1].properties).toBe(2);
     expect(data[5].properties).toBe(10);
-    expect(data[6].properties).toBe(10);
+    expect(data[6].properties).toBe(10); // hold phase
     expect(data[20].properties).toBe(10);
   });
 
@@ -126,12 +126,14 @@ describe('computeProjection', () => {
 
     it('loan is paid off after loanTerm years', () => {
       const { data } = computeProjection({ ...defaults, ltv: 75, loanTerm: 10 });
+      // After term ends, loan balance should be zero (or very close)
       expect(data[Math.min(15, TOTAL_YEARS)].totalLoanBalance).toBeCloseTo(0, -2);
     });
 
     it('higher LTV means lower equity at Y5', () => {
       const noLoan   = computeProjection({ ...defaults, ltv: 0 });
       const highLoan = computeProjection({ ...defaults, ltv: 75 });
+      // More leverage → lower net equity
       expect(highLoan.data[5].equity).toBeLessThan(noLoan.data[5].equity);
     });
   });
@@ -145,6 +147,7 @@ describe('computeProjection', () => {
 
     it('yearTaxesPaid is higher than a simple 10% flat rate would give', () => {
       const { data } = computeProjection({ ...defaults, stateRate: 0 });
+      // At $300K income, marginal brackets yield more tax than 10%
       expect(data[1].yearTaxesPaid).toBeGreaterThan(300_000 * 0.10);
     });
   });
@@ -182,7 +185,7 @@ describe('computeProjection', () => {
 
   describe('principal paydown', () => {
     it('yearPrincipalPaydown is 0 in every year when ltv=0', () => {
-      const { data } = computeProjection(defaults);
+      const { data } = computeProjection(defaults); // defaults has ltv: 0
       for (let i = 1; i <= TOTAL_YEARS; i++) {
         expect(data[i].yearPrincipalPaydown).toBe(0);
       }
@@ -285,6 +288,7 @@ describe('computeProjection', () => {
     });
 
     it('more propertiesPerYear reaches freedom sooner', () => {
+      // pilotYearProperties=0 so year 1 is a pure training year; distinction is clean
       const slow = computeProjection({ ...reachableDefaults, propertiesPerYear: 2,  pilotYearProperties: 0 });
       const fast = computeProjection({ ...reachableDefaults, propertiesPerYear: 10, pilotYearProperties: 0 });
       expect(fast.yearsToReach).toBeLessThan(slow.yearsToReach);
