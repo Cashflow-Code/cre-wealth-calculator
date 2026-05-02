@@ -84,7 +84,7 @@ export default function SimpleCalculator({
             onChange={setIncome}
             min={50000}
             max={2000000}
-            step={10000}
+            step={25000}
           />
           <NumberInput
             label="Monthly 'I'm Free At'"

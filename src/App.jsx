@@ -17,8 +17,8 @@ import { computeTotalTax } from './utils/tax.js';
 
 const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
-  propertyValue: 3_000_000, propertiesPerYear: 4, buyingYears: 5,
-  capRate: 8, depreciation: 35, depDeferYears: 0, equityPct: 25,
+  propertyValue: 2_500_000, propertiesPerYear: 3, buyingYears: 5,
+  capRate: 8, depreciation: 35, depDeferYears: 0, equityPct: 33,
   forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 2,
   showStockAlt: true, savingsRate: 20, stockReturn: 8,
   ltv: 70, loanRate: 6, pilotYearProperties: 2,
@@ -180,6 +180,24 @@ export default function App() {
             <Logo />
           </div>
           <div className="flex items-center gap-2 justify-center sm:justify-end flex-wrap">
+            {/* Year picker - Advanced only (Simple has its own internal picker) */}
+            {!isSimple && (
+              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
+                {[1, 3, 5].map((y) => (
+                  <button
+                    key={y}
+                    onClick={() => setHorizon(y)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      horizon === y
+                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    {y}Y
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Simple/Advanced toggle */}
             <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
               <button
@@ -213,24 +231,6 @@ export default function App() {
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
-            {/* Year picker - Advanced only (Simple has its own internal picker) */}
-            {!isSimple && (
-              <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
-                {[1, 3, 5].map((y) => (
-                  <button
-                    key={y}
-                    onClick={() => setHorizon(y)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      horizon === y
-                        ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                    }`}
-                  >
-                    {y}Y
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </header>
 
@@ -363,34 +363,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* How much capital do I need? */}
-            <section className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] overflow-hidden">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400">How much capital do I need?</p>
-              </div>
-
-              {/* Hero answer */}
-              <div className="px-4 sm:px-6 pb-4">
-                <p className="text-5xl sm:text-6xl font-black text-amber-500 dark:text-amber-400 leading-none tabular-nums">$0</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">of your own capital is required to get started</p>
-              </div>
-
-              {/* Three engines (supporting evidence) */}
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
-                  { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
-                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'can cover up to 100% of the acquisition' },
-                ].map(({ label, value, sub }) => (
-                  <div key={label} className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-1.5">{label}</p>
-                    <p className="text-base sm:text-lg font-black tabular-nums text-amber-500 dark:text-amber-400">{value}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             {/* Chart */}
             <WealthChart
               data={projection.data}
@@ -414,6 +386,34 @@ export default function App() {
               buyingYears={buyingYears}
               isDark={isDark}
             />
+
+            {/* How much capital do I need? */}
+            <section className="rounded-2xl border border-slate-200/80 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 overflow-hidden">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
+                <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">How much capital do I need?</p>
+              </div>
+
+              {/* Hero answer */}
+              <div className="px-4 sm:px-6 pb-4">
+                <p className="text-5xl sm:text-6xl font-black text-slate-800 dark:text-slate-100 leading-none tabular-nums">$0</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">of your own capital is required to get started</p>
+              </div>
+
+              {/* Three engines (supporting evidence) */}
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
+                  { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
+                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                         sub: 'can cover up to 100% of the acquisition' },
+                ].map(({ label, value, sub }) => (
+                  <div key={label} className="rounded-xl border border-slate-200/80 dark:border-slate-700/40 bg-slate-50 dark:bg-slate-800/40 px-4 py-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">{label}</p>
+                    <p className="text-base sm:text-lg font-black tabular-nums text-slate-800 dark:text-slate-100">{value}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
 
             {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
