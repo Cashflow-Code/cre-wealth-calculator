@@ -29,12 +29,10 @@ function CashflowTooltip({ active, payload }) {
   );
 }
 
-function LegendDot({ color, label, dashed }) {
+function LegendDot({ color, label }) {
   return (
     <div className="flex items-center gap-1.5">
-      {dashed
-        ? <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: color }} />
-        : <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />}
+      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
       <span className="text-slate-500 dark:text-slate-400">{label}</span>
     </div>
   );
@@ -61,9 +59,9 @@ export default function CashflowChart({
           <p className="text-[11px] text-slate-500 mt-0.5">Passive income per month · {totalYears}-year comparison</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
-          <LegendDot color="#10b981" label="CRE" />
-          <LegendDot color="#0ea5e9" label="Stocks (4% SWR)" dashed />
-          <LegendDot color="#10b981" label={`Freedom (${fmt(enoughNumber)}/mo)`} dashed />
+          <LegendDot color="#10b981" label="Take Action" />
+          <LegendDot color="#0ea5e9" label="Stocks (4% SWR)" />
+          <LegendDot color="#94a3b8" label="Do Nothing ($0)" />
         </div>
       </div>
       <ResponsiveContainer width="100%" height={300}>
@@ -78,7 +76,7 @@ export default function CashflowChart({
           <ReferenceLine y={0} stroke="#334155" strokeWidth={1}
             label={{ value: 'Do Nothing · $0', fill: axisColor, fontSize: 9, position: 'insideBottomLeft' }} />
           <ReferenceLine y={enoughNumber} stroke="#10b981" strokeDasharray="4 4"
-            label={{ value: `Freedom`, fill: '#10b981', fontSize: 10, position: 'top' }} />
+            label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top' }} />
           {buyingYears && (
             <ReferenceLine
               x={`Y${buyingYears}`}

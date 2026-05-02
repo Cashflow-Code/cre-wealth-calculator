@@ -443,6 +443,7 @@ export default function App() {
               yearsToReach={projection.yearsToReach}
               totalYears={TOTAL_YEARS}
               showStockAlt={showStockAlt}
+              enoughNumber={enoughNumber}
               isDark={isDark}
             />
 

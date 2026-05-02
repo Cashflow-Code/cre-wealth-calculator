@@ -17,7 +17,7 @@ function LegendDot({ color, label }) {
 
 export default function WealthChart({
   data, buyingYears, eligibleStartYear, isReachable,
-  yearsToReach, totalYears, showStockAlt, isDark = true,
+  yearsToReach, totalYears, showStockAlt, enoughNumber, isDark = true,
 }) {
   const gridColor = isDark ? '#1e293b' : '#e2e8f0';
   const axisColor = isDark ? '#475569' : '#94a3b8';
@@ -66,7 +66,7 @@ export default function WealthChart({
             <ReferenceLine
               x={`Y${yearsToReach}`}
               stroke="#10b981" strokeDasharray="2 2"
-              label={{ value: 'Freedom', fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: -5 }}
+              label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: -5 }}
             />
           )}
           <Area type="monotone" dataKey="investorWealth" stroke="none" fill="url(#emeraldGrad)" />
