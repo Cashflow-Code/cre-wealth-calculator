@@ -274,7 +274,7 @@ export default function App() {
                   </div>
 
                   {/* Right: where the gap comes from */}
-                  <div className="flex-1 lg:max-w-[500px] lg:ml-auto rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-5 py-4">
+                  <div className="flex-1 lg:max-w-[580px] lg:ml-auto rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-5 py-4">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-2.5">Where the gap comes from</p>
                     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                       {[
@@ -306,14 +306,14 @@ export default function App() {
                     <Trophy className="w-5 h-5 text-emerald-500 dark:text-emerald-400 self-center flex-shrink-0" />
                     <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
-                    <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">yrs,</span>
+                    <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">years,</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">with</span>
                     <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
                     <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">passive</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">in passive income</span>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 flex items-start gap-3">
