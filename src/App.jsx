@@ -19,7 +19,7 @@ const DEFAULTS = {
   income: 300_000, stateRate: 9, enoughNumber: 10_000,
   propertyValue: 2_000_000, propertiesPerYear: 2, buyingYears: 5,
   capRate: 12, depreciation: 35, depDeferYears: 0, equityPct: 33,
-  forcedAppreciation: 30, annualAppreciation: 4, cashflowGrowth: 3,
+  forcedAppreciation: 20, annualAppreciation: 3, cashflowGrowth: 3,
   showStockAlt: true, savingsRate: 20, stockReturn: 8,
 };
 
@@ -253,11 +253,11 @@ export default function App() {
               <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="relative space-y-6">
 
-                {/* Top: headline + freedom callout */}
-                <div className="flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
+                {/* Top row: big number (left) + gap breakdown (right) */}
+                <div className="flex flex-col lg:flex-row lg:items-start gap-5 lg:gap-6">
 
                   {/* Left: big number */}
-                  <div className="flex-shrink-0 lg:max-w-xs">
+                  <div className="flex-shrink-0 lg:w-56">
                     <div className="flex items-center gap-2 text-amber-500/70 dark:text-amber-400/70 mb-3">
                       <AlertTriangle className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-widest">{horizon}-Year Opportunity Cost</span>
@@ -273,54 +273,59 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* Right: freedom callout */}
-                  <div className="flex-1">
-                    {projection.isReachable ? (
-                      <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex items-start gap-3">
-                        <Trophy className="w-4 h-4 text-emerald-500 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
-                          Financially free in approximately{' '}
-                          <strong className="text-emerald-500 dark:text-emerald-400">
-                            {projection.yearsToReach} years
-                          </strong>
-                          {' '}&mdash; <strong>{projection.propsNeeded} properties</strong> at{' '}
-                          <strong className="text-emerald-500 dark:text-emerald-400">{fmt(projection.cashflowAtFreedom)}/mo</strong>
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 flex items-start gap-3">
-                        <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-700 dark:text-slate-300">
-                          Reaching <strong className="text-amber-500 dark:text-amber-400">{fmt(enoughNumber)}/mo</strong> passively isn't achievable in {TOTAL_YEARS} years. Adjust cap rate or equity stake.
-                        </p>
-                      </div>
-                    )}
+                  {/* Right: where the gap comes from */}
+                  <div className="flex-1 rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-4 py-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-2.5">Where the gap comes from</p>
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                      {[
+                        { label: 'Equity Appreciation',  value: horizonData.equityGain,                                         negative: false },
+                        { label: 'Cumulative Cashflow',   value: horizonData.cumulativeCashflow,                                 negative: false },
+                        { label: 'Tax Savings',           value: horizonData.cumulativeTaxSavings + horizonData.bankedFutureTax, negative: false },
+                        { label: 'Principal Paydown',     value: horizonData.cumulativePrincipalPaydown,                        negative: false },
+                        { label: 'Tax Drag (do nothing)', value: horizonData.cumulativeTaxesPaid,                               negative: true  },
+                      ].map(({ label, value, negative }) => (
+                        <div key={label} className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <Sparkles className={`w-3 h-3 flex-shrink-0 ${negative ? 'text-red-400' : 'text-amber-400'}`} />
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</span>
+                          </div>
+                          <span className={`text-sm font-bold tabular-nums ${negative ? 'text-red-500 dark:text-red-400' : 'text-amber-500 dark:text-amber-400'}`}>
+                            {negative ? '−' : '+'}{fmt(value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Where the gap comes from — horizontal grid */}
-                <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.04] px-4 py-3">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500/60 dark:text-amber-400/60 mb-2.5">Where the gap comes from</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    {[
-                      { label: 'Equity Appreciation',  value: horizonData.equityGain,                                         negative: false },
-                      { label: 'Cumulative Cashflow',   value: horizonData.cumulativeCashflow,                                 negative: false },
-                      { label: 'Tax Savings',           value: horizonData.cumulativeTaxSavings + horizonData.bankedFutureTax, negative: false },
-                      { label: 'Principal Paydown',     value: horizonData.cumulativePrincipalPaydown,                        negative: false },
-                      { label: 'Tax Drag (do nothing)', value: horizonData.cumulativeTaxesPaid,                               negative: true  },
-                    ].map(({ label, value, negative }) => (
-                      <div key={label} className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <Sparkles className={`w-3 h-3 flex-shrink-0 ${negative ? 'text-red-400' : 'text-amber-400'}`} />
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</span>
-                        </div>
-                        <span className={`text-sm font-bold tabular-nums ${negative ? 'text-red-500 dark:text-red-400' : 'text-amber-500 dark:text-amber-400'}`}>
-                          {negative ? '−' : '+'}{fmt(value)}
-                        </span>
-                      </div>
-                    ))}
+                {/* Freedom callout — full-width, prominent */}
+                {projection.isReachable ? (
+                  <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.08] px-5 py-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <Trophy className="w-6 h-6 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
+                    <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in approximately</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
+                      <span className="text-sm font-bold text-emerald-500/70 dark:text-emerald-400/70">yrs</span>
+                    </div>
+                    <span className="text-slate-300 dark:text-slate-600 hidden sm:block">&middot;</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">properties</span>
+                    </div>
+                    <span className="text-slate-300 dark:text-slate-600 hidden sm:block">&middot;</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}/mo</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">passive income</span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 flex items-start gap-3">
+                    <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                      Reaching <strong className="text-amber-500 dark:text-amber-400">{fmt(enoughNumber)}/mo</strong> passively isn't achievable in {TOTAL_YEARS} years. Adjust cap rate or equity stake.
+                    </p>
+                  </div>
+                )}
 
                 {/* Comparison tiles */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -354,14 +359,14 @@ export default function App() {
             </section>
 
             {/* Zero Cash Required callout */}
-            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
+            <section className="rounded-2xl border border-teal-500/20 bg-teal-500/[0.04] overflow-hidden">
               <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-teal-500 dark:text-teal-400">How much capital do I need?</p>
               </div>
 
               {/* Hero answer */}
               <div className="px-4 sm:px-6 pb-4 flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4">
-                <p className="text-5xl sm:text-6xl font-black tabular-nums text-sky-500 dark:text-sky-400 leading-none">$0</p>
+                <p className="text-5xl sm:text-6xl font-black tabular-nums text-teal-500 dark:text-teal-400 leading-none">$0</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   from your savings &mdash; three engines fund every deal
                 </p>
@@ -370,13 +375,13 @@ export default function App() {
               {/* Three engines (supporting evidence) */}
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
-                  { label: 'Creative Structuring', value: 'Capital raises',                            sub: 'creative financing & investor capital cover acquisition' },
-                  { label: 'Taxes Redirected',     value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
-                  { label: 'Tenant Principal',     value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
+                  { label: 'Taxes Redirected',          value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill becomes equity instead' },
+                  { label: 'Tenant Principal',           value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity over time' },
+                  { label: 'Scale Without Your Capital', value: 'Creative Financing',                        sub: 'creative financing & investor capital cover acquisition' },
                 ].map(({ label, value, sub }) => (
-                  <div key={label} className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3">
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mb-1.5">{label}</p>
-                    <p className="text-base sm:text-lg font-black tabular-nums text-sky-500 dark:text-sky-400">{value}</p>
+                  <div key={label} className="rounded-xl border border-teal-500/20 bg-teal-500/[0.06] px-4 py-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-teal-500/60 dark:text-teal-400/60 mb-1.5">{label}</p>
+                    <p className="text-base sm:text-lg font-black tabular-nums text-teal-500 dark:text-teal-400">{value}</p>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
                   </div>
                 ))}
@@ -543,32 +548,39 @@ export default function App() {
                 <div className="rounded-xl border border-slate-200/80 dark:border-slate-700/40 bg-white/60 dark:bg-[#0c1428]/60 overflow-hidden">
                   <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
                     <div className="p-4">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE</div>
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
                       <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
                     </div>
                     <div className="p-4">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Stocks</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-700 dark:text-slate-300">{fmt(finalStockBalance)}</div>
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
+                      <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
                     </div>
-                    <div className="p-4 bg-sky-500/[0.06]">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Combined</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(projection.data[TOTAL_YEARS].investorWealth + finalStockBalance)}</div>
+                    <div className="p-4 bg-slate-500/[0.04]">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Combined</div>
+                      <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{fmt(projection.data[TOTAL_YEARS].investorWealth + finalStockBalance)}</div>
                     </div>
                   </div>
                 </div>
 
-                {/* 2 stat callouts (replaces 3 bullets) */}
+                {/* 2 stat callouts */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3 flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                      Your stocks compound the same <strong className="text-slate-700 dark:text-slate-200">{fmt(finalStockBalance)}</strong> whether or not you do CRE &mdash; nothing's traded off.
+                      Your stocks compound to the same{' '}
+                      <strong className="text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</strong>
+                      {' '}whether or not you do CRE &mdash; nothing's traded off.
                     </p>
                   </div>
                   <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3 flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                      CRE cashflow + tax savings can <strong className="text-emerald-500 dark:text-emerald-400">funnel back into your brokerage</strong>, accelerating both engines together.
+                      <strong className="text-sky-500 dark:text-sky-400">CRE cashflow + tax savings</strong>
+                      {' '}can funnel back into your brokerage &mdash; part of the{' '}
+                      <strong className="text-emerald-500 dark:text-emerald-400">
+                        {fmt(projection.data[TOTAL_YEARS].cumulativeCashflow + projection.data[TOTAL_YEARS].cumulativeTaxSavings)}
+                      </strong>
+                      {' '}generated over {TOTAL_YEARS} years.
                     </p>
                   </div>
                 </div>

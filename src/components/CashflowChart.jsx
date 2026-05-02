@@ -79,7 +79,7 @@ export default function CashflowChart({
             <ReferenceLine y={0} stroke="#334155" strokeWidth={1}
               label={{ value: 'Do Nothing · $0', fill: axisColor, fontSize: 9, position: 'insideBottomLeft' }} />
             <ReferenceLine y={enoughNumber} stroke="#10b981" strokeDasharray="4 4"
-              label={{ value: `Freedom (${fmt(enoughNumber)}/mo)`, fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top' }} />
+              label={{ value: 'Freedom', fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top' }} />
             {buyingYears && (
               <ReferenceLine
                 x={`Y${buyingYears}`}
