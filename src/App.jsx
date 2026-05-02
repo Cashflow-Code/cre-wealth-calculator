@@ -302,28 +302,18 @@ export default function App() {
 
                 {/* Freedom callout — full-width, prominent */}
                 {projection.isReachable ? (
-                  <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.08] px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 flex-wrap">
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <Trophy className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                      <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in approximately</span>
-                    </div>
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <span className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
-                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">yrs,</span>
-                      </span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
-                      <span className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
-                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
-                      </span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">and generating</span>
-                      <span className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
-                        <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo</span>
-                        <span className="text-sm text-slate-500 dark:text-slate-400">passive</span>
-                      </span>
-                    </div>
+                  <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.08] px-5 py-4 flex items-baseline gap-2 flex-wrap">
+                    <Trophy className="w-5 h-5 text-emerald-500 dark:text-emerald-400 self-center flex-shrink-0" />
+                    <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Financially free in</span>
+                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.yearsToReach}</span>
+                    <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">yrs,</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">acquiring</span>
+                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{projection.propsNeeded}</span>
+                    <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">properties</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">with</span>
+                    <span className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums">{fmt(projection.cashflowAtFreedom)}</span>
+                    <span className="text-sm font-medium text-emerald-500/80 dark:text-emerald-400/80">/mo</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">passive</span>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3 flex items-start gap-3">
