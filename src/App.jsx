@@ -307,7 +307,7 @@ export default function App() {
                         icon={TrendingUp} tone="emerald" />
                       <MetricTile label="Principal Paydown"
                         value={fmt(horizonData.cumulativePrincipalPaydown)}
-                        sublabel="Loan amortization · your share"
+                        sublabel="paid by the tenants on the loan"
                         icon={Coins} tone="emerald" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
@@ -374,9 +374,9 @@ export default function App() {
                         value={fmt(horizonData.cumulativeTaxesPaid)}
                         sublabel={`${fmt(horizonData.yearTaxesPaid)}/yr burn`}
                         icon={Receipt} tone="red" />
-                      <MetricTile label="1 Layoff Away"
+                      <MetricTile label="Job Insecurity"
                         value="78%"
-                        sublabel="lack job security (ADP Research, Mar. 2026)"
+                        sublabel="fear they're one layoff away (ADP Research, Mar. 2026)"
                         icon={User} tone="red" />
                     </div>
                     <ul className="space-y-2.5 pt-1">
@@ -484,7 +484,7 @@ export default function App() {
                   </div>
                   <div className="flex items-stretch gap-0 px-5 py-5">
                     <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
-                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(refiCalc.wealthY20)}</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(refiCalc.wealthY20, 1)}</div>
                       <div className="text-[10px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60 mt-2">extra wealth by Y{TOTAL_YEARS}</div>
                     </div>
                     <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
@@ -492,19 +492,19 @@ export default function App() {
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
                           <strong className="text-violet-500 dark:text-violet-400">70% LTV refi every {refiInterval}y</strong>
-                          {' '}— first pull Y{refiCalc.deployments[0]?.year ?? buyingYears + 2}: {fmt(refiCalc.deployments[0]?.amount ?? 0)} ({refiCalc.deployments.length} event{refiCalc.deployments.length !== 1 ? 's' : ''} total)
+                          {' '}— first pull Y{refiCalc.deployments[0]?.year ?? buyingYears + 2}: {fmt(refiCalc.deployments[0]?.amount ?? 0, 1)} ({refiCalc.deployments.length} event{refiCalc.deployments.length !== 1 ? 's' : ''} total)
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.runRateMonthlyCF, 1)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.cumulativeCF)} cumulative</strong> cashflow over the period
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(refiCalc.cumulativeCF, 1)} cumulative</strong> cashflow over the period
                         </p>
                       </div>
                     </div>
@@ -540,7 +540,7 @@ export default function App() {
                   </div>
                   <div className="flex items-stretch gap-0 px-5 py-5">
                     <div className="flex-shrink-0 flex flex-col items-center justify-center pr-5 border-r border-violet-500/20 min-w-[120px]">
-                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(reinvestCalc.wealthY20)}</div>
+                      <div className="text-4xl sm:text-5xl font-black text-violet-500 dark:text-violet-400 tabular-nums leading-none">+{fmt(reinvestCalc.wealthY20, 1)}</div>
                       <div className="text-[10px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60 mt-2">extra wealth by Y{TOTAL_YEARS}</div>
                     </div>
                     <div className="flex-1 pl-5 space-y-2.5 flex flex-col justify-center">
@@ -555,13 +555,13 @@ export default function App() {
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.runRateMonthlyCF)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.runRateMonthlyCF, 1)}/mo</strong> run-rate cashflow at Y{TOTAL_YEARS}
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.cumulativeCF)} cumulative</strong> cashflow over the period
+                          <strong className="text-violet-500 dark:text-violet-400">+{fmt(reinvestCalc.cumulativeCF, 1)} cumulative</strong> cashflow over the period
                         </p>
                       </div>
                     </div>

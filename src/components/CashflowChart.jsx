@@ -83,7 +83,7 @@ export default function CashflowChart({
             <ReferenceLine
               x={`Y${buyingYears}`}
               stroke="#f59e0b" strokeDasharray="4 4"
-              label={{ value: 'Buying ends', fill: '#f59e0b', fontSize: 10, position: 'top', dy: 8 }}
+              label={{ value: 'Buying ends', fill: '#f59e0b', fontSize: 10, position: 'top', dy: -5 }}
             />
           )}
           <Line type="monotone" dataKey="creCashflow" stroke="#10b981" strokeWidth={2.5}

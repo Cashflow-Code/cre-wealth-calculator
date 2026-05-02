@@ -191,7 +191,6 @@ export function computeProjection({
   }
 
   // Freedom calculation — scan actual model data for first year cashflow >= enoughNumber
-  // Round to nearest $100 to avoid near-miss artifacts (e.g. $9,956 vs $10,000 target)
   const grossMonthlyPerProp    = propertyValue * capRateDecimal / 12;
   const loanPerPropMonthly     = ltvDecimal > 0
     ? annualLoanPayment(propertyValue * ltvDecimal, loanRateDecimal, loanTerm) / 12
