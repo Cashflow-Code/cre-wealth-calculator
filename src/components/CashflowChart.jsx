@@ -63,7 +63,7 @@ export default function CashflowChart({
         <div className="flex items-center gap-4 text-xs">
           <LegendDot color="#10b981" label="CRE" />
           <LegendDot color="#0ea5e9" label="Stocks (4% SWR)" dashed />
-          <LegendDot color="#f59e0b" label={`Freedom (${fmt(enoughNumber)}/mo)`} dashed />
+          <LegendDot color="#10b981" label={`Freedom (${fmt(enoughNumber)}/mo)`} dashed />
         </div>
       </div>
       <ResponsiveContainer width="100%" height={300}>
@@ -77,18 +77,13 @@ export default function CashflowChart({
           <Tooltip content={<CashflowTooltip />} />
           <ReferenceLine y={0} stroke="#334155" strokeWidth={1}
             label={{ value: 'Do Nothing · $0', fill: axisColor, fontSize: 9, position: 'insideBottomLeft' }} />
-          <ReferenceLine y={enoughNumber} stroke="#f59e0b" strokeDasharray="4 4"
-            label={{ value: `Freedom`, fill: '#f59e0b', fontSize: 10, position: 'top' }} />
+          <ReferenceLine y={enoughNumber} stroke="#10b981" strokeDasharray="4 4"
+            label={{ value: `Freedom`, fill: '#10b981', fontSize: 10, position: 'top' }} />
           {buyingYears && (
             <ReferenceLine
               x={`Y${buyingYears}`}
               stroke="#f59e0b" strokeDasharray="4 4"
               label={{ value: 'Buying ends', fill: '#f59e0b', fontSize: 10, position: 'top', dy: 8 }}
-            />
-          )}
-          {isReachable && yearsToReach <= totalYears && (
-            <ReferenceLine x={`Y${yearsToReach}`} stroke="#10b981" strokeDasharray="2 2"
-              label={{ value: 'Freedom', fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: 5 }}
             />
           )}
           <Line type="monotone" dataKey="creCashflow" stroke="#10b981" strokeWidth={2.5}

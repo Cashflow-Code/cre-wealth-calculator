@@ -190,23 +190,20 @@ export function computeProjection({
     });
   }
 
-  // Freedom calculation (net of debt service per property)
-  const grossMonthlyPerProp  = propertyValue * capRateDecimal / 12;
-  const loanPerPropMonthly   = ltvDecimal > 0
+  // Freedom calculation — scan actual model data for first year cashflow >= enoughNumber
+  const grossMonthlyPerProp    = propertyValue * capRateDecimal / 12;
+  const loanPerPropMonthly     = ltvDecimal > 0
     ? annualLoanPayment(propertyValue * ltvDecimal, loanRateDecimal, loanTerm) / 12
     : 0;
   const monthlyCashflowPerProp = (grossMonthlyPerProp - loanPerPropMonthly) * equityRate;
-  const propsNeeded   = monthlyCashflowPerProp > 0
-    ? Math.ceil(enoughNumber / monthlyCashflowPerProp)
-    : Infinity;
-  const yearsToReach  = Number.isFinite(propsNeeded)
-    ? Math.ceil(propsNeeded / propertiesPerYear)
-    : Infinity;
-  const cashflowAtFreedom = Number.isFinite(propsNeeded)
-    ? propsNeeded * monthlyCashflowPerProp
-    : 0;
-  const isReachable = Number.isFinite(propsNeeded)
-    && propsNeeded <= propertiesPerYear * buyingYears;
+
+  let yearsToReach = Infinity;
+  for (let y = 1; y <= TOTAL_YEARS; y++) {
+    if (data[y] && data[y].monthlyCashflow >= enoughNumber) { yearsToReach = y; break; }
+  }
+  const isReachable       = Number.isFinite(yearsToReach);
+  const cashflowAtFreedom = isReachable ? data[yearsToReach].monthlyCashflow : 0;
+  const propsNeeded       = isReachable ? data[yearsToReach].properties      : Infinity;
 
   return {
     data, propsNeeded, yearsToReach, cashflowAtFreedom,

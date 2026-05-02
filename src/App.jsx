@@ -107,7 +107,7 @@ export default function App() {
 
     let cumulativeRefiDebt = 0;
     const deployments = [];
-    const firstYear = Math.min(buyingYears + 2, TOTAL_YEARS);
+    const firstYear = Math.min(buyingYears, TOTAL_YEARS);
 
     for (let y = firstYear; y <= TOTAL_YEARS; y += refiInterval) {
       const d = projection.data[y];
@@ -210,10 +210,10 @@ export default function App() {
             <section className="rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:from-amber-500/[0.07] dark:via-[#0d1630] dark:to-red-500/[0.05] p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
               <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-amber-500/10 blur-3xl" />
               <div className="relative">
-                <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-10 mb-8">
+                <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-0 mb-8">
 
                   {/* Left: badge + big number + subtitle */}
-                  <div className="flex-shrink-0 lg:max-w-sm xl:max-w-md">
+                  <div className="flex-shrink-0 lg:max-w-sm xl:max-w-md lg:pr-10 xl:pr-14 lg:border-r lg:border-amber-500/20">
                     <div className="flex items-center gap-2 text-amber-500/70 dark:text-amber-400/70 mb-4">
                       <AlertTriangle className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-widest">{horizon}-Year Opportunity Cost</span>
@@ -231,7 +231,7 @@ export default function App() {
                   </div>
 
                   {/* Right: CRE benefit showcase — simple bullets */}
-                  <div className="flex-1 space-y-3 flex flex-col justify-center">
+                  <div className="flex-1 lg:pl-10 xl:pl-14 space-y-3 flex flex-col justify-center">
                     <div className="flex items-start gap-2.5">
                       <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
@@ -276,7 +276,7 @@ export default function App() {
                         <span className="text-sm font-bold uppercase tracking-widest">If You Take Action</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.totalProfits)}</div>
+                        <div className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.totalProfits)}</div>
                         <div className="text-[10px] text-slate-500 mt-0.5">total ROI</div>
                       </div>
                     </div>
@@ -353,7 +353,7 @@ export default function App() {
                         <span className="text-sm font-bold uppercase tracking-widest">If You Do Nothing</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-black text-red-500 dark:text-red-400 tabular-nums leading-none">−{fmt(horizonData.totalProfits)}</div>
+                        <div className="text-2xl font-black text-red-500 dark:text-red-400 tabular-nums leading-none">−{fmt(horizonData.totalProfits)}</div>
                         <div className="text-[10px] text-slate-500 mt-0.5">opportunity cost</div>
                       </div>
                     </div>
@@ -570,15 +570,13 @@ export default function App() {
               <div className="px-6 pt-5 pb-2">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
               </div>
-              <div className="px-6 pb-3">
-                <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Well, you can do both.</p>
-              </div>
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
                   <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">stocks alone · Y{TOTAL_YEARS}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">in the stock market · Y{TOTAL_YEARS}</div>
                 </div>
                 <div className="flex-1 pl-6 space-y-3 flex flex-col justify-center">
+                  <p className="text-base font-black text-sky-500 dark:text-sky-400 tracking-tight">Well, you can do both.</p>
                   <div className="flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
