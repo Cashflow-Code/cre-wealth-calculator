@@ -36,19 +36,21 @@ function SectionHeader({ icon: Icon, label, iconColor = 'text-emerald-500 dark:t
   );
 }
 
-function Slider({ label, value, onChange, min, max, step, format, sublabel, disabled }) {
+function Slider({ label, value, onChange, min, max, step, format, sublabel, disabled, tone = 'emerald' }) {
+  const valueClass = tone === 'sky' ? 'text-sky-500 dark:text-sky-400' : 'text-emerald-500 dark:text-emerald-400';
+  const accentClass = tone === 'sky' ? 'accent-sky-500' : 'accent-emerald-500';
   return (
     <div className={`space-y-1.5 transition-opacity ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
       <div className="flex items-baseline justify-between gap-2">
         <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">{label}</label>
-        <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{format(value)}</span>
+        <span className={`text-sm font-bold tabular-nums ${valueClass}`}>{format(value)}</span>
       </div>
       <input
         type="range"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         min={min} max={max} step={step} disabled={disabled}
-        className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:cursor-not-allowed"
+        className={`w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed ${accentClass}`}
       />
       {sublabel && <p className="text-[10px] text-slate-500 leading-tight">{sublabel}</p>}
     </div>
@@ -101,7 +103,7 @@ export default function SidebarContent({
           </div>
         )}
 
-        {/* State Tax — label + presets + slider, matching EquityInput pattern */}
+        {/* State Tax — label + presets + slider */}
         {!isSimple && (
           <div className="space-y-1.5">
             <div className="flex items-baseline justify-between gap-2">
@@ -195,23 +197,25 @@ export default function SidebarContent({
           sublabel="Rent escalation" />
       </section>}
 
-      {/* Stocks */}
-      {!isSimple && <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-3">
+      {/* Stocks — always shown */}
+      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-3">
         <div className="flex items-center justify-between">
           <SectionHeader icon={BarChart3} label="Alternative · Stocks" iconColor="text-sky-500 dark:text-sky-400" />
-          <Switch checked={showStockAlt} onChange={() => setShowStockAlt(!showStockAlt)} />
+          {!isSimple && <Switch checked={showStockAlt} onChange={() => setShowStockAlt(!showStockAlt)} />}
         </div>
-        <p className="text-[10px] text-slate-500 leading-relaxed">
-          Compare against saving a % of after-tax income and compounding it in stocks.
-          {showStockAlt ? ' Line shown on chart.' : ' Toggle on to add a line.'}
-        </p>
+        {!isSimple && (
+          <p className="text-[10px] text-slate-500 leading-relaxed">
+            Compare against saving a % of after-tax income and compounding it in stocks.
+            {showStockAlt ? ' Line shown on chart.' : ' Toggle on to add a line.'}
+          </p>
+        )}
         <Slider label="Savings Rate" value={savingsRate} onChange={setSavingsRate}
           min={5} max={50} step={5} format={(v) => `${v}%`}
-          sublabel="% of after-tax income saved" disabled={!showStockAlt} />
+          sublabel="% of after-tax income saved" disabled={!isSimple && !showStockAlt} tone="sky" />
         <Slider label="Stock Market Return" value={stockReturn} onChange={setStockReturn}
           min={4} max={12} step={1} format={(v) => `${v}%`}
-          sublabel="Annual, net of fees" disabled={!showStockAlt} />
-        <div className={`rounded-xl border border-sky-500/20 bg-sky-500/[0.05] p-3 space-y-1.5 transition-opacity ${!showStockAlt ? 'opacity-40' : ''}`}>
+          sublabel="Annual, net of fees" disabled={!isSimple && !showStockAlt} tone="sky" />
+        <div className={`rounded-xl border border-sky-500/20 bg-sky-500/[0.05] p-3 space-y-1.5 transition-opacity ${(!isSimple && !showStockAlt) ? 'opacity-40' : ''}`}>
           <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">Your Stock Investment</div>
           <div className="flex items-baseline justify-between gap-2">
             <span className="text-[10px] text-slate-500">Per year</span>
@@ -226,7 +230,7 @@ export default function SidebarContent({
             <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(finalStockBalance)}</span>
           </div>
         </div>
-      </section>}
+      </section>
 
     </div>
   );

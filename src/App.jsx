@@ -3,7 +3,7 @@ import {
   TrendingUp, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
   Coins, PanelLeftOpen, Menu, Sun, Moon, Sparkles,
-  RefreshCw,
+  RefreshCw, Eye, SlidersHorizontal,
 } from 'lucide-react';
 import Sidebar from './components/Sidebar.jsx';
 import MobileSidebar from './components/MobileSidebar.jsx';
@@ -174,19 +174,28 @@ export default function App() {
           <div className="flex items-center gap-2">
             {/* Simple/Advanced toggle */}
             <div className="flex items-center gap-1 p-1 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/40 rounded-xl backdrop-blur-sm">
-              {[{ label: 'Simple', val: true }, { label: 'Advanced', val: false }].map(({ label, val }) => (
-                <button
-                  key={label}
-                  onClick={() => setIsSimple(val)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    isSimple === val
-                      ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+              <button
+                onClick={() => setIsSimple(true)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  isSimple
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                <Eye className="w-3 h-3" />
+                Simple
+              </button>
+              <button
+                onClick={() => setIsSimple(false)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  !isSimple
+                    ? 'bg-violet-500 text-white shadow-md shadow-violet-500/20'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                <SlidersHorizontal className="w-3 h-3" />
+                Advanced
+              </button>
             </div>
             {/* Dark/Light mode toggle */}
             <button
@@ -460,7 +469,7 @@ export default function App() {
               isReachable={projection.isReachable}
               yearsToReach={projection.yearsToReach}
               totalYears={TOTAL_YEARS}
-              showStockAlt={showStockAlt}
+              showStockAlt={isSimple || showStockAlt}
               enoughNumber={enoughNumber}
               isDark={isDark}
             />
@@ -624,21 +633,6 @@ export default function App() {
               </div>
             </section>}
 
-            {/* Footnote */}
-            <p className="text-center text-xs text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed pb-6">
-              {isSimple
-                ? `Hold through year ${TOTAL_YEARS}. Creative financing — no personal cash. 100% LTV at 6.5% / 30-yr amortization.`
-                : <>
-                    Buying years 1–{buyingYears}, hold through year {TOTAL_YEARS}.
-                    {' '}Year-1 deal jumps {forcedAppreciation}% (forced), then {annualAppreciation}%/yr after.
-                    {' '}Your equity = {equityPct}% share of total deal value. Creative financing — no personal cash.
-                    {' '}100% LTV at 6.5% / 30-yr amortization. Cashflow grows {cashflowGrowth}%/yr.
-                    {' '}2026 federal brackets + {stateRate}% state.
-                    {depDeferYears > 0 && ` Depreciation deferred ${depDeferYears}y.`}
-                    {showStockAlt && ` Stock alt = ${savingsRate}% after-tax at ${stockReturn}%/yr.`}
-                  </>
-              }
-            </p>
           </main>
         </div>
 
