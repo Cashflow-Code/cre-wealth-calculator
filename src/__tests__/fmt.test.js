@@ -41,4 +41,8 @@ describe('fmt', () => {
     // 1_000_000 flips to M
     expect(fmt(1_000_000).endsWith('M')).toBe(true);
   });
+
+  it('rounds $1,500 to $2K (midpoint rounds up)', () => {
+    expect(fmt(1_500)).toBe('$2K');
+  });
 });

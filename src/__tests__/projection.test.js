@@ -150,4 +150,148 @@ describe('computeProjection', () => {
       expect(data[1].yearTaxesPaid).toBeGreaterThan(300_000 * 0.10);
     });
   });
+
+  describe('tax savings invariants', () => {
+    it('yearTaxSavings never exceeds yearTaxesPaid in any year', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 1; i <= TOTAL_YEARS; i++) {
+        expect(data[i].yearTaxSavings).toBeLessThanOrEqual(data[i].yearTaxesPaid + 0.01);
+      }
+    });
+
+    it('yearTaxSavings is non-negative in all years', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 1; i <= TOTAL_YEARS; i++) {
+        expect(data[i].yearTaxSavings).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('cumulativeTaxSavings is monotonically non-decreasing', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 2; i <= TOTAL_YEARS; i++) {
+        expect(data[i].cumulativeTaxSavings).toBeGreaterThanOrEqual(data[i - 1].cumulativeTaxSavings);
+      }
+    });
+
+    it('yearTaxSavings is 0 in every deferred year', () => {
+      const { data } = computeProjection({ ...defaults, depDeferYears: 5 });
+      for (let i = 1; i <= 5; i++) {
+        expect(data[i].yearTaxSavings).toBe(0);
+      }
+      expect(data[6].yearTaxSavings).toBeGreaterThan(0);
+    });
+  });
+
+  describe('principal paydown', () => {
+    it('yearPrincipalPaydown is 0 in every year when ltv=0', () => {
+      const { data } = computeProjection(defaults); // defaults has ltv: 0
+      for (let i = 1; i <= TOTAL_YEARS; i++) {
+        expect(data[i].yearPrincipalPaydown).toBe(0);
+      }
+    });
+
+    it('yearPrincipalPaydown is positive in Y1 when ltv > 0', () => {
+      const { data } = computeProjection({ ...defaults, ltv: 100 });
+      expect(data[1].yearPrincipalPaydown).toBeGreaterThan(0);
+    });
+
+    it('cumulativePrincipalPaydown grows every buying-phase year when ltv > 0', () => {
+      const { data } = computeProjection({ ...defaults, ltv: 100 });
+      for (let i = 2; i <= 5; i++) {
+        expect(data[i].cumulativePrincipalPaydown).toBeGreaterThan(data[i - 1].cumulativePrincipalPaydown);
+      }
+    });
+
+    it('greater ltv produces greater cumulativePrincipalPaydown at Y10', () => {
+      const low  = computeProjection({ ...defaults, ltv: 50 });
+      const high = computeProjection({ ...defaults, ltv: 100 });
+      expect(high.data[10].cumulativePrincipalPaydown).toBeGreaterThan(low.data[10].cumulativePrincipalPaydown);
+    });
+  });
+
+  describe('cashflow modeling', () => {
+    it('monthlyCashflow is positive in all buying-phase years (ltv=0)', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 1; i <= 5; i++) {
+        expect(data[i].monthlyCashflow).toBeGreaterThan(0);
+      }
+    });
+
+    it('monthlyCashflow grows each buying-phase year (new properties added)', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 2; i <= 5; i++) {
+        expect(data[i].monthlyCashflow).toBeGreaterThan(data[i - 1].monthlyCashflow);
+      }
+    });
+
+    it('higher capRate yields higher monthlyCashflow at Y5', () => {
+      const low  = computeProjection({ ...defaults, capRate: 6 });
+      const high = computeProjection({ ...defaults, capRate: 12 });
+      expect(high.data[5].monthlyCashflow).toBeGreaterThan(low.data[5].monthlyCashflow);
+    });
+
+    it('higher cashflowGrowth yields higher monthlyCashflow in holding phase', () => {
+      const low  = computeProjection({ ...defaults, cashflowGrowth: 0 });
+      const high = computeProjection({ ...defaults, cashflowGrowth: 5 });
+      expect(high.data[15].monthlyCashflow).toBeGreaterThan(low.data[15].monthlyCashflow);
+    });
+  });
+
+  describe('equity and appreciation', () => {
+    it('equityGain is non-negative in all years', () => {
+      const { data } = computeProjection(defaults);
+      for (let i = 1; i <= TOTAL_YEARS; i++) {
+        expect(data[i].equityGain).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('higher annualAppreciation yields greater equityGain at Y20', () => {
+      const low  = computeProjection({ ...defaults, annualAppreciation: 1 });
+      const high = computeProjection({ ...defaults, annualAppreciation: 8 });
+      expect(high.data[20].equityGain).toBeGreaterThan(low.data[20].equityGain);
+    });
+
+    it('forcedAppreciation makes Y1 totalDealValue exceed totalOriginalPurchaseCost', () => {
+      const { data } = computeProjection({ ...defaults, forcedAppreciation: 30 });
+      expect(data[1].totalDealValue).toBeGreaterThan(data[1].totalOriginalPurchaseCost);
+    });
+
+    it('zero forcedAppreciation keeps Y1 totalDealValue equal to purchase cost', () => {
+      const { data } = computeProjection({ ...defaults, forcedAppreciation: 0, annualAppreciation: 0 });
+      expect(data[1].totalDealValue).toBeCloseTo(data[1].totalOriginalPurchaseCost, -2);
+    });
+  });
+
+  describe('freedom calculation', () => {
+    const reachableDefaults = {
+      ...defaults, enoughNumber: 10_000, propertiesPerYear: 10, buyingYears: 10,
+    };
+
+    it('cashflowAtFreedom >= enoughNumber when isReachable', () => {
+      const result = computeProjection(reachableDefaults);
+      expect(result.isReachable).toBe(true);
+      expect(result.cashflowAtFreedom).toBeGreaterThanOrEqual(10_000);
+    });
+
+    it('yearsToReach is a finite positive integer when isReachable', () => {
+      const result = computeProjection(reachableDefaults);
+      expect(result.isReachable).toBe(true);
+      expect(Number.isFinite(result.yearsToReach)).toBe(true);
+      expect(result.yearsToReach).toBeGreaterThan(0);
+    });
+
+    it('propsNeeded is Infinity when capRate is 0 (zero cashflow per property)', () => {
+      const result = computeProjection({ ...defaults, capRate: 0 });
+      expect(result.propsNeeded).toBe(Infinity);
+      expect(result.isReachable).toBe(false);
+    });
+
+    it('more propertiesPerYear reaches freedom sooner', () => {
+      // enoughNumber=10_000, monthlyCashflowPerProp≈$4,167 → propsNeeded=3
+      // slow (2/yr): ceil(3/2)=2 years; fast (10/yr): ceil(3/10)=1 year
+      const slow = computeProjection({ ...reachableDefaults, propertiesPerYear: 2 });
+      const fast = computeProjection({ ...reachableDefaults, propertiesPerYear: 10 });
+      expect(fast.yearsToReach).toBeLessThan(slow.yearsToReach);
+    });
+  });
 });

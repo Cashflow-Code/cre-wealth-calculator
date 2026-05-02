@@ -107,4 +107,8 @@ describe('taxSavingsFromDeduction', () => {
     const s2 = taxSavingsFromDeduction(300_000, 100_000, 0.05);
     expect(s2).toBeGreaterThan(s1);
   });
+
+  it('returns 0 when income is 0 regardless of deduction', () => {
+    expect(taxSavingsFromDeduction(0, 100_000, 0.05)).toBe(0);
+  });
 });
