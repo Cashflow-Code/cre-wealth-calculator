@@ -275,8 +275,15 @@ export default function App() {
                         <span className="text-sm font-bold uppercase tracking-widest">If You Take Action</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.totalProfits)}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">total ROI</div>
+                        <div className="flex items-baseline gap-1.5 justify-end">
+                          <span className="text-xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.cumulativeTaxSavings)}</span>
+                          <span className="text-sm font-bold text-emerald-400/60 dark:text-emerald-500/60">+</span>
+                          <span className="text-xl font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.equityGain + horizonData.cumulativeCashflow + horizonData.cumulativePrincipalPaydown)}</span>
+                        </div>
+                        <div className="flex justify-end gap-3 mt-0.5">
+                          <span className="text-[9px] text-slate-500 uppercase tracking-wide">Taxes Saved</span>
+                          <span className="text-[9px] text-slate-500 uppercase tracking-wide">Returns Gained</span>
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -352,8 +359,8 @@ export default function App() {
                         <span className="text-sm font-bold uppercase tracking-widest">If You Do Nothing</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-black text-red-500 dark:text-red-400 tabular-nums leading-none">−{fmt(horizonData.totalProfits)}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">opportunity cost</div>
+                        <div className="text-2xl font-black text-red-500 dark:text-red-400 tabular-nums leading-none">{fmt(horizonData.cumulativeTaxesPaid)}</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">thrown away in taxes</div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
