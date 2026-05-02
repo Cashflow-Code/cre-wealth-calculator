@@ -7,7 +7,7 @@ import { TOTAL_YEARS } from '../utils/projection.js';
 import { effectiveRate } from '../utils/tax.js';
 
 const STATE_PRESETS = [
-  { label: '0 Taxes', value: 0, hint: 'FL, TX, WY — No income tax' },
+  { label: '0 TAXES', value: 0, hint: 'FL, TX, WY — No income tax' },
   { label: 'LCOL',    value: 3, hint: 'CO, UT — Low cost of living' },
   { label: 'MCOL',    value: 5, hint: 'GA, VA — Mid cost of living' },
   { label: 'HCOL',    value: 9, hint: 'CA, NY — High cost of living' },
