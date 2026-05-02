@@ -53,7 +53,7 @@ export default function WealthChart({
           <Tooltip content={(props) => <ChartTooltip {...props} showStockAlt={showStockAlt} />} />
           <ReferenceLine y={0} stroke="#334155" strokeWidth={1} />
           <ReferenceLine
-            x={`Y${eligibleStartYear}`}
+            x={`Y${Math.max(0, eligibleStartYear - 1)}`}
             stroke="#a78bfa" strokeDasharray="4 4"
             label={{ value: 'Tax savings start', fill: '#a78bfa', fontSize: 10, position: 'top', dy: -5 }}
           />

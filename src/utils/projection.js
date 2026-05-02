@@ -199,7 +199,7 @@ export function computeProjection({
 
   let yearsToReach = Infinity;
   for (let y = 1; y <= TOTAL_YEARS; y++) {
-    if (data[y] && Math.round(data[y].monthlyCashflow / 100) * 100 >= enoughNumber) { yearsToReach = y; break; }
+    if (data[y] && Math.ceil(data[y].monthlyCashflow / 100) * 100 >= enoughNumber) { yearsToReach = y; break; }
   }
   const isReachable       = Number.isFinite(yearsToReach);
   const cashflowAtFreedom = isReachable ? data[yearsToReach].monthlyCashflow : 0;
@@ -207,6 +207,7 @@ export function computeProjection({
 
   return {
     data, propsNeeded, yearsToReach, cashflowAtFreedom,
-    isReachable, eligibleStartYear, monthlyCashflowPerProp,
+    isReachable, eligibleStartYear,
+    monthlyCashflowPerProp,
   };
 }
