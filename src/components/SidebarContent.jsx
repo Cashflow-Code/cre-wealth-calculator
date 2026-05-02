@@ -66,7 +66,7 @@ export default function SidebarContent({
   showStockAlt, setShowStockAlt, savingsRate, setSavingsRate,
   stockReturn, setStockReturn,
   annualStockDeposit, totalStockInvested, finalStockBalance,
-  onReset,
+  onReset, isSimple,
 }) {
   const federalEffective = effectiveRate(income);
   const totalEffective   = federalEffective + stateRate / 100;
@@ -88,36 +88,40 @@ export default function SidebarContent({
         <Slider label="Annual Income" value={income} onChange={setIncome}
           min={50000} max={2000000} step={10000} format={fmt} />
 
-        <div className="rounded-lg border border-slate-200 dark:border-slate-700/40 bg-slate-100 dark:bg-slate-800/30 px-3 py-2.5 space-y-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] text-slate-500 font-medium">Federal effective rate</span>
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tabular-nums">{(federalEffective * 100).toFixed(1)}%</span>
+        {!isSimple && (
+          <div className="rounded-lg border border-slate-200 dark:border-slate-700/40 bg-slate-100 dark:bg-slate-800/30 px-3 py-2.5 space-y-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] text-slate-500 font-medium">Federal effective rate</span>
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tabular-nums">{(federalEffective * 100).toFixed(1)}%</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[10px] text-slate-500 font-medium">Combined (fed + state)</span>
+              <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{(totalEffective * 100).toFixed(1)}%</span>
+            </div>
           </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] text-slate-500 font-medium">Combined (fed + state)</span>
-            <span className="text-xs font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{(totalEffective * 100).toFixed(1)}%</span>
-          </div>
-        </div>
+        )}
 
         {/* State Tax — label + presets + slider, matching EquityInput pattern */}
-        <div className="space-y-1.5">
-          <div className="flex items-baseline justify-between gap-2">
-            <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">State Tax Rate</label>
-            <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{stateRate}%</span>
+        {!isSimple && (
+          <div className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-2">
+              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">State Tax Rate</label>
+              <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400 tabular-nums">{stateRate}%</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {STATE_PRESETS.map(({ label, value, hint }) => (
+                <button key={value} onClick={() => setStateRate(value)} title={hint}
+                  className={presetButtonClass(stateRate === value)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <input type="range" value={stateRate} onChange={(e) => setStateRate(Number(e.target.value))}
+              min={0} max={15} step={0.5}
+              className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
+            <p className="text-[10px] text-slate-500 leading-tight">Added on top of 2026 federal brackets</p>
           </div>
-          <div className="grid grid-cols-4 gap-1">
-            {STATE_PRESETS.map(({ label, value, hint }) => (
-              <button key={value} onClick={() => setStateRate(value)} title={hint}
-                className={presetButtonClass(stateRate === value)}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <input type="range" value={stateRate} onChange={(e) => setStateRate(Number(e.target.value))}
-            min={0} max={15} step={0.5}
-            className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-emerald-500" />
-          <p className="text-[10px] text-slate-500 leading-tight">Added on top of 2026 federal brackets</p>
-        </div>
+        )}
 
         {/* Enough Number — label + presets + slider */}
         <div className="space-y-1.5">
@@ -149,28 +153,36 @@ export default function SidebarContent({
           min={1} max={10} step={1}
           format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
           sublabel="During the buying phase" />
-        <Slider label="Buying Years" value={buyingYears} onChange={setBuyingYears}
-          min={1} max={10} step={1}
-          format={(v) => `${v} ${v === 1 ? 'year' : 'years'}`}
-          sublabel={`Then hold through Y${TOTAL_YEARS}`} />
-        <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
-          min={4} max={20} step={1} format={(v) => `${v}%`}
-          sublabel="Annual NOI ÷ property value" />
-        <EquityInput value={equityPct} onChange={setEquityPct} />
-        <Slider label="Bonus Depreciation" value={depreciation} onChange={setDepreciation}
-          min={10} max={50} step={5} format={(v) => `${v}%`}
-          sublabel="Cost seg, year-1 acceleration" />
-        <Slider label="Years to Use Depreciation" value={depDeferYears} onChange={setDepDeferYears}
-          min={0} max={15} step={1}
-          format={(v) => (v === 0 ? 'Now' : `${v}y`)}
-          sublabel={depDeferYears === 0
-            ? 'You can deduct today (W-2 + REPS)'
-            : 'Deferred — accumulates until eligible (H1B, pre-REPS)'
-          } />
+        {!isSimple && (
+          <Slider label="Buying Years" value={buyingYears} onChange={setBuyingYears}
+            min={1} max={10} step={1}
+            format={(v) => `${v} ${v === 1 ? 'year' : 'years'}`}
+            sublabel={`Then hold through Y${TOTAL_YEARS}`} />
+        )}
+        {!isSimple && (
+          <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
+            min={4} max={20} step={1} format={(v) => `${v}%`}
+            sublabel="Annual NOI ÷ property value" />
+        )}
+        {!isSimple && <EquityInput value={equityPct} onChange={setEquityPct} />}
+        {!isSimple && (
+          <Slider label="Bonus Depreciation" value={depreciation} onChange={setDepreciation}
+            min={10} max={50} step={5} format={(v) => `${v}%`}
+            sublabel="Cost seg, year-1 acceleration" />
+        )}
+        {!isSimple && (
+          <Slider label="Years to Use Depreciation" value={depDeferYears} onChange={setDepDeferYears}
+            min={0} max={15} step={1}
+            format={(v) => (v === 0 ? 'Now' : `${v}y`)}
+            sublabel={depDeferYears === 0
+              ? 'You can deduct today (W-2 + REPS)'
+              : 'Deferred — accumulates until eligible (H1B, pre-REPS)'
+            } />
+        )}
       </section>
 
       {/* Growth */}
-      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-4">
+      {!isSimple && <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-4">
         <SectionHeader icon={TrendingUp} label="Growth Assumptions" />
         <Slider label="Forced Appreciation Y1" value={forcedAppreciation} onChange={setForcedAppreciation}
           min={0} max={50} step={5} format={(v) => `${v}%`}
@@ -181,10 +193,10 @@ export default function SidebarContent({
         <Slider label="Cashflow Growth / Yr" value={cashflowGrowth} onChange={setCashflowGrowth}
           min={0} max={10} step={1} format={(v) => `${v}%`}
           sublabel="Rent escalation" />
-      </section>
+      </section>}
 
       {/* Stocks */}
-      <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-3">
+      {!isSimple && <section className="border-t border-slate-200 dark:border-slate-700/40 pt-5 space-y-3">
         <div className="flex items-center justify-between">
           <SectionHeader icon={BarChart3} label="Alternative · Stocks" iconColor="text-sky-500 dark:text-sky-400" />
           <Switch checked={showStockAlt} onChange={() => setShowStockAlt(!showStockAlt)} />
@@ -214,7 +226,7 @@ export default function SidebarContent({
             <span className="text-sm font-bold text-sky-500 dark:text-sky-400 tabular-nums">{fmt(finalStockBalance)}</span>
           </div>
         </div>
-      </section>
+      </section>}
 
     </div>
   );
