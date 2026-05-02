@@ -29,10 +29,12 @@ function CashflowTooltip({ active, payload }) {
   );
 }
 
-function LegendDot({ color, label }) {
+function LegendDot({ color, label, dashed }) {
   return (
     <div className="flex items-center gap-1.5">
-      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+      {dashed
+        ? <div className="w-5 h-0.5 border-t-2 border-dashed" style={{ borderColor: color }} />
+        : <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />}
       <span className="text-slate-500 dark:text-slate-400">{label}</span>
     </div>
   );
@@ -55,7 +57,7 @@ export default function CashflowChart({
     <div className="rounded-2xl border border-slate-200 dark:border-slate-700/40 bg-white/80 dark:bg-[#0c1428]/80 p-5 shadow-xl">
       <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">Monthly Cashflow</h3>
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">Cashflow Trajectory</h3>
           <p className="text-[11px] text-slate-500 mt-0.5">Passive income per month · {totalYears}-year comparison</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
