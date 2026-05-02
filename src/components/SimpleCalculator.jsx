@@ -68,10 +68,10 @@ export default function SimpleCalculator({
       {/* Title */}
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
-          Your Cost of Inaction
+          Your Opportunity Cost
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          What happens if you act now vs. do nothing — no jargon, just numbers
+          The difference between acting now and waiting — no jargon, just numbers
         </p>
       </div>
 
@@ -175,7 +175,7 @@ export default function SimpleCalculator({
 
       {/* Opportunity gap callout */}
       <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.04] px-5 py-4">
-        <p className="text-xs font-bold uppercase tracking-widest text-red-500 dark:text-red-400 mb-2">The Real Cost of Waiting</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-red-500 dark:text-red-400 mb-2">Opportunity Gap</p>
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
           <span className="text-3xl sm:text-4xl font-black text-red-500 dark:text-red-400 tabular-nums">
             {fmt(d.investorWealth - d.doNothingPosition)}
