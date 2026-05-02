@@ -58,7 +58,7 @@ export default function CashflowChart({
       <div className="flex items-center justify-between mb-4 sm:mb-5 flex-wrap gap-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">Cashflow Trajectory</h3>
-          <p className="text-[11px] text-slate-500 mt-0.5">Passive income per month · {totalYears}-year comparison</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">passive income per month · {totalYears}-year projection</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
           <LegendDot color="#10b981" label="Take Action" />
