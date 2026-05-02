@@ -88,19 +88,7 @@ export default function CashflowChart({
           )}
           {isReachable && yearsToReach <= totalYears && (
             <ReferenceLine x={`Y${yearsToReach}`} stroke="#10b981" strokeDasharray="2 2"
-              label={(props) => {
-                const { viewBox: { x, y } } = props;
-                return (
-                  <text
-                    x={x + 5} y={y + 14}
-                    fill="#10b981" fontSize={10} fontWeight="bold"
-                    textAnchor="start"
-                    transform={`rotate(-90, ${x + 5}, ${y + 14})`}
-                  >
-                    Freedom reached
-                  </text>
-                );
-              }}
+              label={{ value: 'Freedom', fill: '#10b981', fontSize: 10, fontWeight: 'bold', position: 'top', dy: 5 }}
             />
           )}
           <Line type="monotone" dataKey="creCashflow" stroke="#10b981" strokeWidth={2.5}

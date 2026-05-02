@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  TrendingUp, Home, AlertTriangle, Trophy,
+  TrendingUp, TrendingDown, Home, AlertTriangle, Trophy,
   Banknote, Zap, Clock, User, Receipt,
   Coins, PanelLeftOpen, Menu, Sun, Moon, Sparkles,
   RefreshCw,
@@ -229,53 +229,38 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* Right: CRE five-engine benefit showcase */}
-                  <div className="flex-1 space-y-2">
-                    {[
-                      {
-                        icon: Banknote,
-                        label: 'Cashflow',
-                        value: `${fmt(horizonData.monthlyCashflow)}/mo`,
-                        sub: `${fmt(horizonData.cumulativeCashflow)} cumulative · tenants fund your lifestyle`,
-                      },
-                      {
-                        icon: Receipt,
-                        label: 'Tax Savings',
-                        value: fmt(horizonData.cumulativeTaxSavings),
-                        sub: 'W2 income sheltered via cost segregation & depreciation',
-                      },
-                      {
-                        icon: TrendingUp,
-                        label: 'Equity & Appreciation',
-                        value: fmt(horizonData.equityGain),
-                        sub: `${equityPct}% of ${fmt(horizonData.totalDealValue)} portfolio · forced + market growth`,
-                      },
-                      {
-                        icon: Coins,
-                        label: 'Principal Paydown',
-                        value: fmt(horizonData.cumulativePrincipalPaydown),
-                        sub: 'Tenants amortize the loan · your equity builds while you sleep',
-                      },
-                      {
-                        icon: Zap,
-                        label: 'Positive Leverage',
-                        value: `+${Math.max(0, capRate - 6.5).toFixed(1)}% spread`,
-                        sub: 'Cap rate exceeds debt cost · inflation erodes your fixed-rate debt · repay in cheaper future dollars',
-                      },
-                    ].map(({ icon: Icon, label, value, sub }) => (
-                      <div key={label} className="flex items-start gap-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/10 px-4 py-3">
-                        <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Icon className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-baseline justify-between gap-2 flex-wrap">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-600/70 dark:text-amber-400/70">{label}</span>
-                            <span className="text-sm font-black text-amber-500 dark:text-amber-400 tabular-nums">{value}</span>
-                          </div>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">{sub}</p>
-                        </div>
-                      </div>
-                    ))}
+                  {/* Right: CRE benefit showcase — simple bullets */}
+                  <div className="flex-1 space-y-3 flex flex-col justify-center">
+                    <div className="flex items-start gap-2.5">
+                      <Banknote className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <strong className="text-amber-500 dark:text-amber-400">Passive cashflow</strong> — tenants pay rent every month, income grows with every property
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <Receipt className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <strong className="text-amber-500 dark:text-amber-400">Depreciation shelter</strong> — cost segregation turns your W2 tax bill into real estate equity
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <TrendingUp className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <strong className="text-amber-500 dark:text-amber-400">Equity appreciation</strong> — forced value-add in year one, then market growth compounds
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <Coins className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <strong className="text-amber-500 dark:text-amber-400">Tenant-funded amortization</strong> — positive leverage: cap rate exceeds debt cost while renters build your equity
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <TrendingDown className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
+                        <strong className="text-amber-500 dark:text-amber-400">Debt devaluation</strong> — you'd rather owe $1M from 10 years ago than today; inflation erodes the real cost of fixed-rate debt (Fisher Effect)
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -287,7 +272,7 @@ export default function App() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-emerald-500 dark:text-emerald-400">
                         <Trophy className="w-4 h-4" />
-                        <span className="text-xs font-bold uppercase tracking-widest">If You Take Action</span>
+                        <span className="text-sm font-bold uppercase tracking-widest">If You Take Action</span>
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-black text-emerald-500 dark:text-emerald-400 tabular-nums leading-none">{fmt(horizonData.totalProfits)}</div>
@@ -364,7 +349,7 @@ export default function App() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-red-500 dark:text-red-400">
                         <AlertTriangle className="w-4 h-4" />
-                        <span className="text-xs font-bold uppercase tracking-widest">If You Do Nothing</span>
+                        <span className="text-sm font-bold uppercase tracking-widest">If You Do Nothing</span>
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-black text-red-500 dark:text-red-400 tabular-nums leading-none">−{fmt(horizonData.totalProfits)}</div>
@@ -410,7 +395,7 @@ export default function App() {
             {/* Zero Cash Required callout */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
               </div>
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 {/* Big $0 */}
@@ -468,7 +453,7 @@ export default function App() {
             {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Other Optimizations You Can Perform</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Other Optimizations You Can Perform</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                   These compound on top of your base scenario. All estimates use the settings above.
                 </p>
@@ -584,11 +569,11 @@ export default function App() {
             {/* But Isn't Stock Investing More Passive? */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
               </div>
               <div className="flex items-stretch gap-0 px-6 pb-6">
                 <div className="flex-shrink-0 flex flex-col items-center justify-center pr-6 border-r border-sky-500/20 min-w-[150px]">
-                  <div className="text-sm font-black text-sky-500 dark:text-sky-400 text-center mb-1">Yes — do both</div>
+                  <div className="text-xs font-black text-sky-500 dark:text-sky-400 text-center uppercase tracking-widest mb-2">You can do both</div>
                   <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
                   <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 text-center">Stocks alone · Y{TOTAL_YEARS} · {savingsRate}% of after-tax</div>
                 </div>
