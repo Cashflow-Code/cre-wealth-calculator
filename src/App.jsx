@@ -353,36 +353,22 @@ export default function App() {
 
             {/* Zero Cash Required callout */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">How much capital do I need?</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">Three engines that fund the deal &mdash; none of them your savings account</p>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-6 pb-4 sm:pb-6">
-                {/* Big $0 */}
-                <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-6 sm:border-r border-sky-500/20 sm:min-w-[120px]">
-                  <div className="text-7xl sm:text-8xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">$0</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2">of your money</div>
-                </div>
-                {/* Bullet explanation */}
-                <div className="flex-1 sm:pl-6 space-y-3 flex flex-col justify-center">
-                  <div className="flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                      <strong className="text-sky-500 dark:text-sky-400">Creative financing &amp; capital raises</strong> &mdash; partners fund the deals, you bring the knowledge and structure
-                    </p>
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { label: 'Taxes Redirected',     value: fmt(horizonData.cumulativeTaxSavings),       sub: 'W-2 tax bill turned into real estate equity' },
+                  { label: 'Tenant Principal',      value: fmt(horizonData.cumulativePrincipalPaydown), sub: 'renters build your equity while you sleep' },
+                  { label: 'Creative Structuring',  value: '$0 from you',                               sub: 'creative financing & capital raises fund the rest' },
+                ].map(({ label, value, sub }) => (
+                  <div key={label} className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mb-1.5">{label}</p>
+                    <p className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{value}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{sub}</p>
                   </div>
-                  <div className="flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                      <strong className="text-sky-500 dark:text-sky-400">Redirect taxes you already pay</strong> &mdash; depreciation turns your W-2 tax bill into real estate equity
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                      <strong className="text-sky-500 dark:text-sky-400">Tenants pay the mortgage</strong> &mdash; principal paydown builds your equity while you sleep
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </section>
 
@@ -417,6 +403,14 @@ export default function App() {
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                   These compound on top of your base scenario. All estimates use the settings above.
                 </p>
+              </div>
+              {/* Combined upside callout */}
+              <div className="mx-4 sm:mx-6 mb-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-violet-500/60 dark:text-violet-400/60 mb-1">Combined upside at Y{TOTAL_YEARS}</p>
+                  <p className="text-3xl font-black tabular-nums text-violet-500 dark:text-violet-400">+{fmt(refiCalc.wealthY20 + reinvestCalc.wealthY20)}</p>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-[220px]">refi cycles + reinvestment stacked on top of your base scenario</p>
               </div>
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -526,16 +520,33 @@ export default function App() {
 
             {/* But Isn't Stock Investing More Passive? */}
             <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">At Y{TOTAL_YEARS} &mdash; same income, same savings rate</p>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch gap-0 px-4 sm:px-6 pb-4 sm:pb-6">
-                <div className="flex-shrink-0 flex flex-col items-center justify-center pb-4 border-b sm:pb-0 sm:border-b-0 sm:pr-6 sm:border-r border-sky-500/20 sm:min-w-[150px]">
-                  <div className="text-5xl sm:text-6xl font-black text-sky-500 dark:text-sky-400 tabular-nums leading-none">{fmt(finalStockBalance)}</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-sky-500/60 dark:text-sky-400/60 mt-2 text-center">in the stock market by Y{TOTAL_YEARS}</div>
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+                {/* Side-by-side comparison */}
+                <div className="rounded-xl border border-slate-200/80 dark:border-slate-700/40 bg-white/60 dark:bg-[#0c1428]/60 overflow-hidden">
+                  <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-slate-700/40">
+                    <div className="p-4 sm:p-5">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE &middot; Take Action</div>
+                      <div className="text-2xl sm:text-3xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
+                      <div className="text-[10px] text-slate-500 mt-1">total wealth at Y{TOTAL_YEARS}</div>
+                    </div>
+                    <div className="p-4 sm:p-5">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stocks &middot; Do Both</div>
+                      <div className="text-2xl sm:text-3xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                      <div className="text-[10px] text-slate-500 mt-1">stock portfolio at Y{TOTAL_YEARS}</div>
+                    </div>
+                  </div>
+                  <div className="border-t border-slate-100 dark:border-slate-700/40 px-4 py-2.5 bg-emerald-500/[0.03]">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <strong className="text-emerald-500 dark:text-emerald-400">These are additive</strong> &mdash; CRE cashflow + tax savings increase how much you can invest in stocks
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 sm:pl-6 space-y-3 flex flex-col justify-center">
-                  <p className="text-base font-black text-sky-500 dark:text-sky-400 tracking-tight">Well, you can do both.</p>
+                {/* Bullets */}
+                <div className="space-y-2.5">
                   <div className="flex items-start gap-2.5">
                     <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
