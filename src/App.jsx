@@ -47,7 +47,7 @@ export default function App() {
   const [isDark, setIsDark]                         = useState(false);
   const [refiInterval, setRefiInterval]             = useState(5);
   const [reinvestMode, setReinvestMode]             = useState('both');
-  const [isSimple, setIsSimple]                     = useState(false);
+  const [isSimple, setIsSimple]                     = useState(true);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -486,7 +486,7 @@ export default function App() {
             />
 
             {/* Other Optimizations You Can Perform */}
-            {!isSimple && <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
+            <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-3">
                 <p className="text-sm font-bold uppercase tracking-widest text-violet-500 dark:text-violet-400">Other Optimizations You Can Perform</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
@@ -597,10 +597,10 @@ export default function App() {
                 </div>
 
               </div>
-            </section>}
+            </section>
 
             {/* But Isn't Stock Investing More Passive? */}
-            {!isSimple && <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
+            <section className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] overflow-hidden">
               <div className="px-6 pt-5 pb-2">
                 <p className="text-sm font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400">But Isn't Stock Investing More Passive?</p>
               </div>
@@ -631,7 +631,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            </section>}
+            </section>
 
           </main>
         </div>
