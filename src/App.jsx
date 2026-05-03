@@ -476,10 +476,10 @@ export default function App() {
                 {/* Bottom row: 3 equal-width callouts (sky, emerald, red) */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] p-4">
-                    <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stocks Unchanged</div>
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">No Change In Stocks</div>
                     <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
-                      Your portfolio unaffected.
+                      Your stock portfolio remains unaffected either way.
                     </p>
                   </div>
                   <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4">
