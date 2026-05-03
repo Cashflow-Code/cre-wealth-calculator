@@ -489,9 +489,8 @@ export default function App() {
                       Cashflow + tax savings over {TOTAL_YEARS} years recycle into your brokerage.
                     </p>
                   </div>
-                  <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-slate-800/40 dark:to-slate-400/[0.04] p-4 relative overflow-hidden">
-                    <div className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full bg-slate-300/20 dark:bg-slate-400/[0.05] blur-2xl" />
-                    <div className="relative grid grid-cols-2 gap-4 lg:gap-0">
+                  <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-slate-500/[0.04] p-4">
+                    <div className="grid grid-cols-2 gap-4 lg:gap-0">
                       <div className="flex flex-col lg:pr-3 lg:border-r lg:border-slate-200 dark:lg:border-slate-700/40">
                         <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-2">If you act</div>
                         <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100 mb-1">{wealthMultiplier.toFixed(1)}&times;</div>
