@@ -136,6 +136,9 @@ export default function App() {
   }, [projection, annualAppreciation, capRate, equityPct, buyingYears, refiInterval]);
 
   const finalStockBalance = projection.data[TOTAL_YEARS].stockBalance;
+  const combinedY20       = projection.data[TOTAL_YEARS].investorWealth + finalStockBalance;
+  const wealthMultiplier  = finalStockBalance > 0 ? combinedY20 / finalStockBalance : 0;
+  const taxesLostY20      = projection.data[TOTAL_YEARS].cumulativeTaxesPaid;
 
   const sharedSidebarProps = {
     income, setIncome, stateRate, setStateRate, enoughNumber, setEnoughNumber,
@@ -423,6 +426,81 @@ export default function App() {
               </div>
             </section>
 
+            {/* But Isn't Stock Investing More Passive? */}
+            <section className="rounded-2xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-[#0c1428] dark:to-slate-400/[0.04] relative overflow-hidden shadow-2xl shadow-slate-900/10">
+              <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-slate-300/15 dark:bg-slate-400/[0.06] blur-3xl" />
+              <div className="relative p-4 sm:p-6 space-y-4">
+
+                {/* Top row: punchy answer (left) + 3-cell comparison (right) */}
+                <div className="flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-6">
+                  <div className="flex-shrink-0 lg:w-72">
+                    <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-3">But isn't stock investing more passive?</p>
+                    <p
+                      className="text-5xl sm:text-6xl font-black text-slate-800 dark:text-slate-100 leading-none"
+                      style={{ textShadow: '0 0 60px rgba(148,163,184,0.45)' }}
+                    >Do both.</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Stocks compound. CRE multiplies.</p>
+                  </div>
+
+                  {/* Vertical divider — slate hint */}
+                  <div className="hidden lg:block self-stretch w-px bg-gradient-to-b from-transparent via-slate-300/60 dark:via-slate-600/40 to-transparent" />
+
+                  {/* Right: 3-cell comparison */}
+                  <div className="flex-1 rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-white/60 dark:bg-slate-500/[0.06] overflow-hidden">
+                    <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
+                      <div className="p-4">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
+                        <div className="flex items-baseline gap-2">
+                          <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                          <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
+                        <div className="flex items-baseline gap-2">
+                          <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
+                          <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-slate-500/[0.04]">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Combined</div>
+                        <div className="flex items-baseline gap-2">
+                          <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{fmt(combinedY20)}</div>
+                          <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom row: 3 equal-width callouts (sky, emerald, red) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] p-4">
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stocks Unchanged</div>
+                    <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                      Same trajectory whether or not you do CRE &mdash; nothing's traded off.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4">
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Funnels Back</div>
+                    <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].cumulativeCashflow + projection.data[TOTAL_YEARS].cumulativeTaxSavings)}</div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                      Cashflow + tax savings over {TOTAL_YEARS} years recycle into your brokerage.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-red-500/20 bg-red-500/[0.06] p-4">
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-red-500/70 mb-2">vs. Waiting</div>
+                    <div className="text-xl sm:text-2xl font-black tabular-nums text-red-500 dark:text-red-400">{wealthMultiplier.toFixed(1)}&times;</div>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                      More wealth than stocks alone &mdash; and you'd lose <strong className="text-red-500 dark:text-red-400">{fmt(taxesLostY20)}</strong> to taxes either way.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
             {/* Other Optimizations You Can Perform */}
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] overflow-hidden">
               <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
@@ -544,70 +622,6 @@ export default function App() {
                   </div>
                 </div>
 
-              </div>
-            </section>
-
-            {/* But Isn't Stock Investing More Passive? */}
-            <section className="rounded-2xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-[#0c1428] dark:to-slate-400/[0.04] relative overflow-hidden shadow-2xl shadow-slate-900/10">
-              <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-slate-300/15 dark:bg-slate-400/[0.06] blur-3xl" />
-              <div className="relative">
-                <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3">
-                  <p className="text-sm font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">But isn't stock investing more passive?</p>
-                  <p className="text-base font-bold text-slate-700 dark:text-slate-200 mt-1">It's actually better to do both.</p>
-                </div>
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
-
-                  {/* 3-cell comparison: Stocks + CRE = Combined */}
-                  <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-white/60 dark:bg-slate-500/[0.06] overflow-hidden">
-                  <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700/40">
-                    <div className="p-4">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stock Portfolio</div>
-                      <div className="flex items-baseline gap-2">
-                        <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
-                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-emerald-500/70 mb-2">CRE Wealth</div>
-                      <div className="flex items-baseline gap-2">
-                        <div className="text-xl sm:text-2xl font-black tabular-nums text-emerald-500 dark:text-emerald-400">{fmt(projection.data[TOTAL_YEARS].investorWealth)}</div>
-                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-slate-500/[0.04]">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-2">Combined</div>
-                      <div className="flex items-baseline gap-2">
-                        <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{fmt(projection.data[TOTAL_YEARS].investorWealth + finalStockBalance)}</div>
-                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">by Y{TOTAL_YEARS}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2 stat callouts */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="rounded-xl border border-sky-500/20 bg-sky-500/[0.06] px-4 py-3 flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-sky-500 dark:text-sky-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                      Your stocks compound to the same{' '}
-                      <strong className="text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</strong>
-                      {' '}whether or not you do CRE &mdash; nothing's traded off.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
-                      <strong className="text-emerald-500 dark:text-emerald-400">CRE cashflow + tax savings</strong>
-                      {' '}can funnel back into your brokerage &mdash; part of the{' '}
-                      <strong className="text-emerald-500 dark:text-emerald-400">
-                        {fmt(projection.data[TOTAL_YEARS].cumulativeCashflow + projection.data[TOTAL_YEARS].cumulativeTaxSavings)}
-                      </strong>
-                      {' '}generated over {TOTAL_YEARS} years.
-                    </p>
-                  </div>
-                </div>
-
-                </div>
               </div>
             </section>
 
