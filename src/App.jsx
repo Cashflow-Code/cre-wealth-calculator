@@ -489,12 +489,15 @@ export default function App() {
                       Cashflow + tax savings over {TOTAL_YEARS} years recycle into your brokerage.
                     </p>
                   </div>
-                  <div className="rounded-xl border border-slate-700/60 bg-slate-900 p-4">
-                    <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-2">vs. Waiting</div>
-                    <div className="text-xl sm:text-2xl font-black tabular-nums text-white">{wealthMultiplier.toFixed(1)}&times;</div>
-                    <p className="text-[10px] text-slate-300 mt-1 leading-snug">
-                      More wealth than stocks alone &mdash; and you'd lose <strong className="text-red-400">{fmt(taxesLostY20)}</strong> to taxes either way.
-                    </p>
+                  <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-slate-800/40 dark:to-slate-400/[0.04] p-4 relative overflow-hidden">
+                    <div className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full bg-slate-300/20 dark:bg-slate-400/[0.05] blur-2xl" />
+                    <div className="relative">
+                      <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-2">If you do both</div>
+                      <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{wealthMultiplier.toFixed(1)}&times;</div>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                        More wealth than stocks alone &mdash; and you'd lose <strong className="text-red-500 dark:text-red-400">{fmt(taxesLostY20)}</strong> to taxes either way.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
