@@ -479,7 +479,7 @@ export default function App() {
                     <div className="text-[9px] font-bold uppercase tracking-wider text-sky-500/70 mb-2">Stocks Unchanged</div>
                     <div className="text-xl sm:text-2xl font-black tabular-nums text-sky-500 dark:text-sky-400">{fmt(finalStockBalance)}</div>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
-                      Same trajectory whether or not you do CRE &mdash; nothing's traded off.
+                      Your portfolio unaffected.
                     </p>
                   </div>
                   <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4">
@@ -495,7 +495,7 @@ export default function App() {
                       <div className="flex flex-col lg:pr-3 lg:border-r lg:border-slate-200 dark:lg:border-slate-700/40">
                         <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-2">If you act</div>
                         <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100 mb-1">{wealthMultiplier.toFixed(1)}&times;</div>
-                        <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-snug">more wealth than with stocks alone</p>
+                        <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-snug">more wealth by doing both</p>
                       </div>
                       <div className="flex flex-col lg:pl-3">
                         <div className="text-[9px] font-bold uppercase tracking-wider text-red-600/80 dark:text-red-400 mb-2">If you don't act</div>
