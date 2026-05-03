@@ -491,12 +491,17 @@ export default function App() {
                   </div>
                   <div className="rounded-xl border border-slate-300/40 dark:border-slate-600/30 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-500/[0.07] dark:via-slate-800/40 dark:to-slate-400/[0.04] p-4 relative overflow-hidden">
                     <div className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full bg-slate-300/20 dark:bg-slate-400/[0.05] blur-2xl" />
-                    <div className="relative">
-                      <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-2">If you do both</div>
-                      <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{wealthMultiplier.toFixed(1)}&times;</div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
-                        More wealth than stocks alone &mdash; and you'd lose <strong className="text-red-500 dark:text-red-400">{fmt(taxesLostY20)}</strong> to taxes either way.
-                      </p>
+                    <div className="relative grid grid-cols-2 gap-4 lg:gap-0">
+                      <div className="flex flex-col lg:pr-3 lg:border-r lg:border-slate-200 dark:lg:border-slate-700/40">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-1">If you act</div>
+                        <div className="text-[10px] text-slate-600 dark:text-slate-300 mb-2">CRE + stocks</div>
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{wealthMultiplier.toFixed(1)}&times;</div>
+                      </div>
+                      <div className="flex flex-col lg:pl-3">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-red-600/80 dark:text-red-400 mb-1">If you don't act</div>
+                        <div className="text-[10px] text-red-600 dark:text-red-300 mb-2">Stocks only</div>
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-red-600 dark:text-red-400">−{fmt(taxesLostY20)}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
