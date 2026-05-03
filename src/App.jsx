@@ -493,14 +493,14 @@ export default function App() {
                     <div className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full bg-slate-300/20 dark:bg-slate-400/[0.05] blur-2xl" />
                     <div className="relative grid grid-cols-2 gap-4 lg:gap-0">
                       <div className="flex flex-col lg:pr-3 lg:border-r lg:border-slate-200 dark:lg:border-slate-700/40">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-1">If you act</div>
-                        <div className="text-[10px] text-slate-600 dark:text-slate-300 mb-2">CRE + stocks</div>
-                        <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100">{wealthMultiplier.toFixed(1)}&times;</div>
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500/80 dark:text-slate-400 mb-2">If you act</div>
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-slate-800 dark:text-slate-100 mb-1">{wealthMultiplier.toFixed(1)}&times;</div>
+                        <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-snug">more wealth than with stocks alone</p>
                       </div>
                       <div className="flex flex-col lg:pl-3">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-red-600/80 dark:text-red-400 mb-1">If you don't act</div>
-                        <div className="text-[10px] text-red-600 dark:text-red-300 mb-2">Stocks only</div>
-                        <div className="text-xl sm:text-2xl font-black tabular-nums text-red-600 dark:text-red-400">−{fmt(taxesLostY20)}</div>
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-red-600/80 dark:text-red-400 mb-2">If you don't act</div>
+                        <div className="text-xl sm:text-2xl font-black tabular-nums text-red-600 dark:text-red-400 mb-1">−{fmt(taxesLostY20)}</div>
+                        <p className="text-[10px] text-red-600 dark:text-red-300 leading-snug">thrown away in taxes</p>
                       </div>
                     </div>
                   </div>
