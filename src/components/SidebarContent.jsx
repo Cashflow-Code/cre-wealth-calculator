@@ -142,21 +142,21 @@ export default function SidebarContent({
         <div className="mt-4 space-y-4">
           <Slider label="Avg Property Value" value={propertyValue} onChange={setPropertyValue}
             min={500000} max={5000000} step={100000} format={fmt} />
-          <Slider label="Properties / Year" value={propertiesPerYear} onChange={setPropertiesPerYear}
-            min={1} max={6} step={1}
-            format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
-            sublabel="During the buying phase (year 2+)" />
+          {!isSimple && (
+            <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
+              min={4} max={20} step={1} format={(v) => `${v}%`}
+              sublabel="Annual NOI ÷ property value" />
+          )}
           {!isSimple && (
             <Slider label="Year 1 Deals" value={pilotYearProperties} onChange={setPilotYearProperties}
               min={0} max={4} step={1}
               format={(v) => v === 0 ? 'Training only' : `${v} ${v === 1 ? 'deal' : 'deals'}`}
               sublabel="Pilot acquisitions; full pace from year 2" />
           )}
-          {!isSimple && (
-            <Slider label="Cap Rate" value={capRate} onChange={setCapRate}
-              min={4} max={20} step={1} format={(v) => `${v}%`}
-              sublabel="Annual NOI ÷ property value" />
-          )}
+          <Slider label="Properties / Year" value={propertiesPerYear} onChange={setPropertiesPerYear}
+            min={1} max={6} step={1}
+            format={(v) => `${v} ${v === 1 ? 'deal' : 'deals'}`}
+            sublabel="During the buying phase (year 2+)" />
           {!isSimple && <EquityInput value={equityPct} onChange={setEquityPct} />}
         </div>
       </details>
